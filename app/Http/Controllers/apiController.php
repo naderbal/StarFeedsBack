@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Category;
 use App\FacebookFeed;
 use App\Following;
+use App\InstagramFeed;
 use App\TwitterFeed;
 use App\User;
 use ErrorException;
@@ -13,55 +14,17 @@ use App\Celebrity;
 use App\Post;
 use App\Http\Requests;
 use Illuminate\Support\Facades\DB;
+use InstagramScraper\Instagram;
 
 class apiController extends Controller
 {
     public $FACEBOOK_TAG = "Facebook";
     public $TWITTER_TAG = "Twitter";
+    public $Instagram_TAG = "Instagram";
 
 
-
-    public function getUserFeeds($id){
-        //get celebrities followed by user of id $id
-       $celebs = User::find($id)->celebrity;
-
-        $posts = array();
-        foreach($celebs as $celeb){
-            //get the all FacebookFeeds of the celebrity
-            $celebFbFeeds = FacebookFeed::where('celeb_id','=',$celeb->id)->get();
-            foreach($celebFbFeeds as $feed){
-                $celebName = $celeb->name;
-                $platform = $this->FACEBOOK_TAG;
-                $post = new Post($feed, $platform, $celebName);
-                array_push($posts,$post);
-            }
-
-            //get the all FacebookFeeds of the celebrity
-            $celebTwitterFeeds = TwitterFeed::where('celeb_id','=',$celeb->id)->get();
-            foreach($celebTwitterFeeds as $feed){
-                $celebName = $celeb->name;
-                $platform = $this -> TWITTER_TAG;
-                $post = new Post($feed, $platform, $celebName);
-                array_push($posts,$post);
-            }
-        }
-        //sort the posts by timestamp
-        usort($posts, array($this, 'cmp'));
-        return $posts;
-    }
-
-    /**
-     * Comparator function, which compares the timestamps of two passed Posts
-     */
-    public static function cmp($post1, $post2)
-    {
-        return strcmp($post2->timestamp, $post1->timestamp);
-    }
-
-
-    public function getCelebs()
-    {
-        return Celebrity::all();
+    public function getCategories(){
+        return Category::all();
     }
 
     /**
@@ -86,18 +49,6 @@ class apiController extends Controller
         }
     }
 
-    public function getFacebookProfilePicture($id){
-        $url = "https://graph.facebook.com/v2.8/$id/picture?debug=all&format=json&method=get&pretty=0&redirect=false&suppress_http_code=1";
-
-        try {
-            $result = file_get_contents($url);
-            $decoded = json_decode($result, true);
-        }catch (ErrorException $e){
-            echo 'exe'. $e;
-            return null;
-        }
-        return $decoded["data"]["url"];
-    }
 
     /**
      * Requests and returns the tweets of a certain celebrity through twitter's API
@@ -148,18 +99,25 @@ class apiController extends Controller
         return $tweets;
     }
 
+    public function makeInstagramCall($handle){
+        $media = Instagram::getMedias($handle, 10);
+
+        return $media;
+    }
+
 
     public function saveFeedsToDatabase()
     {
         $celebs = Celebrity::all();
         $FACEBOOK_PREFIX = "facebook_";
         $TWITTER_PREFIX = "twitter_";
+        $Instagram_PREFIX = "instagram_";
 
         foreach ($celebs as $celeb) {
             $fbId = $celeb->fb_id;
             $celebId = $celeb->id;
             $celebrity = Celebrity::find($celebId);
-            if ($fbId !== '') {
+            if ($fbId !== '' && $fbId != null) {
                 try {
                     $fbResult = $this->makeFbCall($fbId);
                     if($fbResult==null){
@@ -202,7 +160,7 @@ class apiController extends Controller
                 }
             }
             $twtId = $celeb->twt_id;
-            if ($twtId != '') {
+            if ($twtId != '' && $twtId != null) {
                 $twtResult = $this->makeTwitterCall($twtId);
                 foreach ($twtResult as $result) {
                     $feedType = "twitter_text";
@@ -232,6 +190,32 @@ class apiController extends Controller
                     $celebrity->twitterFeed()->save($twitterFeed);
                 }
             }
+            $instagramHandle = $celeb->instagram_id;
+            if($instagramHandle != '' && $instagramHandle != null){
+                $instagramResult = $this->makeInstagramCall($instagramHandle);
+                foreach($instagramResult as $result){
+                    if (count(InstagramFeed::where('feed_id','=',$result->id)->get()) > 0) {
+                        break;
+                    }
+                    $feedId = $result->id;
+                    $created_time = $result->createdTime;
+                    $feedType = $result->type;
+                    $feedText = $result->caption;
+                    $feedImageUrl = $result->imageHighResolutionUrl;
+                    $feedVideoUrl = $result->videoStandardResolutionUrl;
+                    $feedType = $Instagram_PREFIX.$feedType;
+
+                    $instagramFeed = new InstagramFeed(['feed_id' => $feedId,
+                        "celeb_id"=>$celebId,
+                        "text" => $feedText,
+                        "feed_type" => $feedType,
+                        "created_time"=>$created_time,
+                        "image_url" => $feedImageUrl,
+                        "video_url" => $feedVideoUrl]);
+
+                    $celebrity->InstagramFeed()->save($instagramFeed);
+                }
+            }
         }
     }
 
@@ -259,31 +243,16 @@ class apiController extends Controller
     }
 
 
-    public function addCeleb(Request $request){
-        $name = $request->input("name");
-        $fb_id = $request->input("fb_id");
-        $twt_id = $request->input("twt_id");
-        $category = $request->input("category");
-        /*if (count(Celebrity::where(['fb_id','=',$fb_id])->get()) > 0){
-            return;
-        }*/
-        $fbProfilePic = $this->getFacebookProfilePicture($fb_id);
-        $celeb = new Celebrity(["name" => $name, "fb_id" => $fb_id,"fb_profile_url"=>$fbProfilePic,"twt_id" => $twt_id]);
-
-        $categoryVar = Category::where("category",'=',$category)->get()->first();
-        if(!$categoryVar) {
-            $categoryVar = new Category(["category" => $category]);
-            $categoryVar->save();
-        }
-        $celeb->save();
-        $celeb->category()->save($categoryVar);
-    }
-
     public function a(){
         $celeb = Celebrity::find(4);
         //$celeb = new Celebrity(["name" => "nad","fb_id" => "nnn","twt_id" => "nnt"]);
         $user =new User(['name' => 'Mo', 'email' => 'nader@email.com', 'password' => 'password', 'gender' => 'male', 'age' => '21']);
         $celeb ->user()->save($user);
+    }
+
+    public function testInstagram(){
+        $medias = Instagram::getMedias('nusr_et', 10);
+        return $medias;
     }
 
 }

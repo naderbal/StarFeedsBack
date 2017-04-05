@@ -20,8 +20,16 @@ Route::post('/follow','UserController@followCeleb');
 
 Route::get('/api/test','apiController@testTwitter');
 Route::get('/api/testFacebook','apiController@testFacebook');
-Route::get('/user-feeds/{id}','apiController@getUserFeeds');
+Route::get('/user-feeds/{id}','UserController@getUserFeeds');
 Route::get('/api/save','apiController@saveFeedsToDatabase');
-Route::post('/celeb','apiController@addCeleb');
 
+Route::get('/testInstagram','apiController@testInstagram');
+
+Route::get('/categories','apiController@getCategories');
 Route::post('/userSuggestions','UserController@getSuggestionsOfUser');
+
+//celebrities
+Route::post('/add-celeb','CelebrityController@addCeleb');
+Route::get('/get-celebs-name/{celebName}','CelebrityController@getCelebsByName');
+Route::get('/get-celebs-category/{categId}','CelebrityController@getCelebsByCategory');
+Route::get('/get-celebs-country/{country}','CelebrityController@getCelebsByCountry');
