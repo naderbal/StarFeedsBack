@@ -17,19 +17,25 @@ Route::get('/', function () {
 
 Route::post('/save-user','UserController@save');
 Route::post('/follow','UserController@followCeleb');
+Route::post('/un-follow','UserController@unFollowCeleb');
 
 Route::get('/api/test','apiController@testTwitter');
 Route::get('/api/testFacebook','apiController@testFacebook');
-Route::get('/user-feeds/{id}','UserController@getUserFeeds');
+Route::get('/user-feeds/{id}/{page}','UserController@getUserFeeds');
+Route::get('/new-user-feeds/{id}/{postId}','UserController@getNewUserFeeds');
+Route::get('/user-following/{id}','UserController@getUserFollowing');
 Route::get('/api/save','apiController@saveFeedsToDatabase');
 
 Route::get('/testInstagram','apiController@testInstagram');
 
 Route::get('/categories','apiController@getCategories');
-Route::post('/userSuggestions','UserController@getSuggestionsOfUser');
+Route::get('/user-suggestions/{id}','UserController@getSuggestions');
+Route::get('/explore/{id}','UserController@getExploreFeeds');
 
 //celebrities
 Route::post('/add-celeb','CelebrityController@addCeleb');
-Route::get('/get-celebs-name/{celebName}','CelebrityController@getCelebsByName');
+Route::get('/celeb/{celebId}/{userId}','CelebrityController@getCeleb');
+Route::get('/search-celebs-name/{celebName}/{userId}','CelebrityController@getCelebsByName');
 Route::get('/get-celebs-category/{categId}','CelebrityController@getCelebsByCategory');
 Route::get('/get-celebs-country/{country}','CelebrityController@getCelebsByCountry');
+Route::get('/celeb-feeds/{celebId}','CelebrityController@getCelebFeeds');

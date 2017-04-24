@@ -4,6 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Category;
 use App\Celebrity;
+use App\FacebookFeed;
+use App\InstagramFeed;
+use App\Post;
+use App\TwitterFeed;
+use App\User;
 use ErrorException;
 use Illuminate\Http\Request;
 
@@ -11,10 +16,24 @@ use App\Http\Requests;
 
 class CelebrityController extends Controller
 {
-    public function getCelebsByName($celebName)
+    public $FACEBOOK_TAG = "Facebook";
+    public $TWITTER_TAG = "Twitter";
+    public $INSTAGRAM_TAG = "Instagram";
+
+    public function getCelebsByName($celebName, $userId)
     {
+        $celebsSearched = [];
+        $isFollowed = false;
+        $celebsFollowed = User::find($userId)->celebrity;
+        $celebs = Celebrity::where('name','=',$celebName)->get();
         //todo ask kinane like instead of equals
-        return Celebrity::where('name','=',$celebName)->get();
+        foreach($celebs as $celeb){
+            if($celebsFollowed->contains($celeb)) $isFollowed = true;
+            else $isFollowed = false;
+            $cel = ["is_followed" => $isFollowed,"celeb" => $celeb];
+            array_push($celebsSearched,$cel);
+        }
+        return ["data"=>$celebsSearched];
     }
 
     public function getCelebsByCategory($categoryId)
@@ -37,6 +56,63 @@ class CelebrityController extends Controller
     {
 
     }
+
+    public function getCeleb($celebId, $userId)
+    {
+        $isFollowed = false;
+        $celeb = Celebrity::find($celebId);
+        $celebsFollowed = User::find($userId)->celebrity;
+        $cel = [];
+        if($celebsFollowed->contains($celeb)) $isFollowed = true;
+        else $isFollowed = false;
+
+        $cel = ["is_followed" => $isFollowed,"celeb" => $celeb];
+        return ["data"=>$cel];
+    }
+
+    public function getCelebFeeds($celebId){
+        $celeb = Celebrity::find($celebId);
+        if($celeb == null) return [];
+        $posts = [];
+        //get all FacebookFeeds of the celebrity
+        $celebFbFeeds = FacebookFeed::where('celeb_id','=',$celeb->id)->get();
+        foreach($celebFbFeeds as $feed){
+            $platform = $this->FACEBOOK_TAG;
+            $post = new Post($feed, $platform, $celeb);
+            array_push($posts,$post);
+        }
+
+        //get all TwitterFeeds of the celebrity
+        $celebTwitterFeeds = TwitterFeed::where('celeb_id','=',$celeb->id)->get();
+        foreach($celebTwitterFeeds as $feed){
+            $celebName = $celeb->name;
+            $platform = $this -> TWITTER_TAG;
+            $post = new Post($feed, $platform, $celeb);
+            array_push($posts,$post);
+        }
+
+        //get all InstagramFeeds of the celebrity
+        $celebInstagramFeeds = InstagramFeed::where('celeb_id','=',$celeb->id)->get();
+        foreach($celebInstagramFeeds as $feed){
+            $celebName = $celeb->name;
+            $platform = $this -> INSTAGRAM_TAG;
+            $post = new Post($feed, $platform, $celeb);
+            array_push($posts,$post);
+        }
+
+        //sort the posts by timestamp
+        usort($posts, array($this, 'cmp'));
+        return $posts;
+    }
+
+    /**
+     * Comparator function, which compares the timestamps of two passed Posts
+     */
+    public static function cmp($post1, $post2)
+    {
+        return strcmp($post2->timestamp, $post1->timestamp);
+    }
+
 
     public function addCeleb(Request $request){
         $name = $request->input("name");

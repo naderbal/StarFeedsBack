@@ -38,7 +38,7 @@ class apiController extends Controller
         //Create an access token using the APP ID and APP Secret.
         $accessToken = $appID . '|' . $appSecret;
         //Tie it all together to construct the URL
-        $url = "https://graph.facebook.com/$id/posts?access_token=$accessToken&fields=picture,name,message,status_type,created_time,full_picture,link,story&limit=3";
+        $url = "https://graph.facebook.com/$id/posts?access_token=$accessToken&fields=id,picture,name,message,status_type,created_time,full_picture,link,story&limit=3";
         try {
             $result = file_get_contents($url);
             $decoded = json_decode($result, true);
@@ -133,7 +133,7 @@ class apiController extends Controller
                         $feedId = $data['id'];
                         $feedType = $FACEBOOK_PREFIX.$data['status_type'];
                         $created_time = $data['created_time'];
-                        $feedText = null;
+                        $feedText = "";
                         if(array_key_exists('message', $data)){
                             $feedText = $data['message'];
                         }
@@ -169,7 +169,7 @@ class apiController extends Controller
                     }
                     $feedId = $result['id_str'];
                     $created_time = $result['created_at'];
-                    $feedText = null;
+                    $feedText = "";
                     if(array_key_exists('text',$result)){
                         $feedText = $result['text'];
                     }
