@@ -39,3 +39,11 @@ Route::get('/search-celebs-name/{celebName}/{userId}','CelebrityController@getCe
 Route::get('/get-celebs-category/{categId}','CelebrityController@getCelebsByCategory');
 Route::get('/get-celebs-country/{country}','CelebrityController@getCelebsByCountry');
 Route::get('/celeb-feeds/{celebId}','CelebrityController@getCelebFeeds');
+
+//web
+Route::get('/home/{id}/{postId}','UserWebController@getUserFeeds');
+Route::get('/{id}/celebrities/all','UserWebController@getCelebrities');
+Route::get('/{id}/celebrities/categories','UserWebController@getCategories');
+Route::get('/{id}/celebrities/region','UserWebController@getRegions');
+Route::get('/timeline/{id}','UserWebController@getCelebrityFeeds');
+Route::get('/edit-account/{id}','UserWebController@getUser');

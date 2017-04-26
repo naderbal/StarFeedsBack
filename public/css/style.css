@@ -1,0 +1,39 @@
+.navbar-login
+{
+    width: 305px;
+    padding: 10px;
+    padding-bottom: 0px;
+}
+
+.navbar-login-session
+{
+    padding: 10px;
+    padding-bottom: 0px;
+    padding-top: 0px;
+}
+
+.icon-size
+{
+    font-size: 87px;
+}
+
+.src-image {
+    display: none;
+}
+
+.moreImages{
+    position: absolute;
+    margin-top: -124.5%;
+    height: 48.3%;
+    width: 88.5%;
+    background-color: rgba(84, 84, 84, 0.8);
+    color: rgb(200,200,200);
+    font-size: 30px;
+    visibility: hidden;
+}
+
+.moreImages :hover{
+    visibility: visible;
+
+}
+
