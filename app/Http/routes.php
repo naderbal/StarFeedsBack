@@ -39,3 +39,5 @@ Route::get('/search-celebs-name/{celebName}/{userId}','CelebrityController@getCe
 Route::get('/get-celebs-category/{categId}','CelebrityController@getCelebsByCategory');
 Route::get('/get-celebs-country/{country}','CelebrityController@getCelebsByCountry');
 Route::get('/celeb-feeds/{celebId}','CelebrityController@getCelebFeeds');
+
+/////
