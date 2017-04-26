@@ -47,3 +47,5 @@ Route::get('/{id}/celebrities/categories','UserWebController@getCategories');
 Route::get('/{id}/celebrities/region','UserWebController@getRegions');
 Route::get('/timeline/{id}','UserWebController@getCelebrityFeeds');
 Route::get('/edit-account/{id}','UserWebController@getUser');
+
+/////
