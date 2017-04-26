@@ -14,5 +14,5 @@ class Phone extends NeoEloquent
     {
         return $this->belongsTo(User::class);
     }
-
+//
 }
