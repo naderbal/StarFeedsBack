@@ -205,7 +205,7 @@ class UserController extends Controller
                 if($celeb->category->contains($category)){
                     // check if user already follows celeb
                     if(!$user->celebrity->contains($celeb)) {
-                        array_push($suggestionCelebs, $celeb);
+                        array_push($suggestionCelebs, ["celeb"=>$celeb]);
                     }
                 }
             }
