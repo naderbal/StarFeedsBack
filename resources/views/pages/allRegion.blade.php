@@ -1,7 +1,7 @@
 @extends('main')
 
 @section('celebritiesActive','active')
-@section('title',' | Celebrities | Region')
+@section('title',' | Celebrities ')
 
 <style>
     .btn-list{
@@ -28,18 +28,18 @@
         transition: all 0.25s ease-in-out;
         color:#aaa;
     }
+
+    h3::first-letter{
+        text-transform: capitalize;
+    }
 </style>
 
 @section('content')
-    <div class="row">
-        <div class="col-md-12 col-sm-12 col-xs-12">
-            <ul class="nav nav-tabs">
-                <li role="presentation" id="allTab" class="" ><a href="/celebrities/all" >All</a></li>
-                <li role="presentation" id="regionTab" class="active" ><a href="#" >Region</a></li>
-                <li role="presentation" id="categoriesTab" class="" ><a href="/celebrities/categories" >Categories</a></li>
-            </ul>
-        </div>
-    </div>
+    @include('partials._celebNav',[
+                                   'categoriesActive'=>'',
+                                   'allActive' => '',
+                                   'regionActive' => 'active'
+                                   ])
 
     <div class="row" id="region" style="display: block">
         <div class="col-md-10">
@@ -48,7 +48,7 @@
 
             @foreach($regions as $region)
 
-                <div class="col-md-2" style="margin-bottom: 10px;">
+                <div class="col-lg-2 col-md-3 col-xs-5" style="margin-bottom: 10px;">
                     <a href="/celebrities/region/{{ $region }}" class="btn btn-list"> <h3> {{ $region }} </h3> </a>
                 </div>
 

@@ -11,40 +11,41 @@
 
             <!-- edit form column -->
             <div class="col-md-9 personal-info">
+
                 <div class="alert alert-info alert-dismissable">
                     <a class="panel-close close" data-dismiss="alert">×</a>
                     <i class="fa fa-coffee"></i>
-                    This is an <strong>.alert</strong>. Use this to show important messages to the user.
+                    <strong>  </strong>
                 </div>
                 <h3>Personal info</h3>
 
-                {!! Form::open(array('url' => 'foo/bar','class'=>'form-horizontal')) !!}
+                {!! Form::open(array('url' => '/add-celebrity','class'=>'form-horizontal')) !!}
 
                 <div class="form-group">
                     {{Form::label('celebname', 'Name:',array('class' => 'col-lg-3'))}}
                     <div class="col-lg-8">
-                        {{Form::text('celebname', null,array('class' => 'form-control','placeholder' => "Name"))}}
+                        {{Form::text('name', null,array('class' => 'form-control','placeholder' => "Name"))}}
                     </div>
                 </div>
 
                 <div class="form-group">
                     {{Form::label('twitterlink', 'Twitter Link:',array('class' => 'col-lg-3'))}}
                     <div class="col-lg-8">
-                        {{Form::text('twitterlink', null,array('class' => 'form-control','placeholder' => 'Twitter link'))}}
+                        {{Form::text('twt_id', null,array('class' => 'form-control','placeholder' => 'Twitter link'))}}
                     </div>
                 </div>
 
                 <div class="form-group">
                     {{Form::label('facebooklink', 'Facebook Link: ',array('class' => 'col-lg-3'))}}
                     <div class="col-lg-8">
-                        {{Form::text('facebooklink', null,array('class' => 'form-control','placeholder' => 'Facebook link'))}}
+                        {{Form::text('fb_id', null,array('class' => 'form-control','placeholder' => 'Facebook link'))}}
                     </div>
                 </div>
 
                 <div class="form-group">
                     {{Form::label('instagramlink', 'Instagram Link:',array('class' => 'col-lg-3'))}}
                     <div class="col-lg-8">
-                        {{Form::text('instagramlink', null,array('class' => 'form-control','placeholder' => 'Instagram link'))}}
+                        {{Form::text('instagram_id', null,array('class' => 'form-control','placeholder' => 'Instagram link'))}}
                     </div>
                 </div>
 

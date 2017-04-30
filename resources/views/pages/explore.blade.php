@@ -118,41 +118,41 @@
         <div class="col-md-8">
             @foreach ($explorefeeds as $feed )
 
-                @if (str_contains($feed['type'],"image"))
+                @if (str_contains($feed->feedType,"photo"))
 
 
 
                     @include('partials._imgPost',
-                             ['postimg'=> $feed['imageUrl'],
-                              'usrname'=> $feed['celebName'],
-                              'usrimg'=>  $feed['useimage'],
-                              'postapp'=> $feed['platform'],
-                              'date'=>    $feed['date'],
-                              'cap'=>     $feed['text'],
-                              'postid' => $feed['id']
+                             ['postimg'=> $feed->imageUrl,
+                              'usrname'=> $feed->celebName,
+                              'usrimg'=>  $feed->imageProfile,
+                              'postapp'=> $feed->platform,
+                              'date'=>    $feed->date,
+                              'cap'=>     $feed->text,
+                              'postid' => $feed->id
                               ])
 
 
-                @elseif(str_contains($feed['type'],"video") )
+                @elseif(str_contains($feed->feedType,"video") )
 
                     @include('partials._vidPost',
-                              ['usrname'=> $feed['celebName'],
-                               'usrimg'=>  $feed['useimage'],
-                               'postvid'=> $feed['videoUrl'],
-                               'postapp'=> $feed['platform'],
-                               'date'=>    $feed['date'],
-                               'cap'=>     $feed['text']
+                              ['usrname'=> $feed->celebName,
+                               'usrimg'=>  $feed->imageProfile,
+                               'postvid'=> $feed->link,
+                               'postapp'=> $feed->platform,
+                               'date'=>    $feed->date,
+                               'cap'=>     $feed->text
                               ])
 
 
-                @elseif(str_contains($feed['type'],"text7") )
+                @elseif(str_contains($feed->feedType,"text") )
 
                     @include('partials._txtPost',
-                            ['post'=>    $feed['text'],
-                             'usrname'=> $feed['celebName'],
-                             'usrimg'=>  $feed['useimage'],
-                             'postapp'=> $feed['platform'],
-                             'date'=>    $feed['date']
+                            ['post'=>    $feed->text,
+                             'usrname'=> $feed->celebName,
+                             'usrimg'=>  $feed->imageProfile,
+                             'postapp'=> $feed->platform,
+                             'date'=>    $feed->date
                             ])
                 @endif
 

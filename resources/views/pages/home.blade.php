@@ -167,15 +167,16 @@
         </div>
 
         <div class="col-md-3 col-md-offset-1 col-sm-3 sol-sm-offset-1 hidden-xs" style="background-color: ; border: 1px solid #ddd; border-radius: 10px">
-            <h3>Suggestions</h3>
+            <h3><a href="/{{$user->id}}/suggestions">Suggestions</a></h3>
             <hr>
             @foreach($suggestions as $suggestion)
 
                 @include('partials._suggestion',
                 [
-                'usrimage'=> $suggestion->imageProfile,
+                'celebimage'=> $suggestion->imageProfile,
                 'usrname' => $suggestion->name,
-                'id' => $suggestion->id
+                'celebid' => $suggestion->id,
+                'id' => $user->id
                 ]
                 )
 

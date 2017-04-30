@@ -105,54 +105,54 @@ class UserController extends Controller
 
 
 
-    public function followCeleb(Request $request){
-        $userId = $request->input("user_id");
-        $celebId = $request->input("celeb_id");
-        $isSuccessful = false;
-        $user = User::find($userId);
-        $celeb = Celebrity::find($celebId);
-
-        if($user == null || $celeb == null){
+        public function followCeleb(Request $request){
+            $userId = $request->input("user_id");
+            $celebId = $request->input("celeb_id");
             $isSuccessful = false;
-        }else if( count($user->celebrity()->where('name',$celeb->name)->get()) > 0){
-            $isSuccessful = false;
-        } else {
-            $user->celebrity()->save($celeb);
-            $celeb->followers++;
-            $celeb->save();
-            $isSuccessful = true;
-            $category = $celeb->category;
+            $user = User::find($userId);
+            $celeb = Celebrity::find($celebId);
 
-            $likes = $user->likes()->get();
-            $isFound = false;
-            //loop over all likes of user
-            foreach ($likes as $li) {
-                //check if like isnt bound to a category(error)
-                if (!isset($li->category)) {
-                    continue;
+            if($user == null || $celeb == null){
+                $isSuccessful = false;
+            }else if( count($user->celebrity()->where('name',$celeb->name)->get()) > 0){
+                $isSuccessful = false;
+            } else {
+                $user->celebrity()->save($celeb);
+                $celeb->followers++;
+                $celeb->save();
+                $isSuccessful = true;
+                $category = $celeb->category;
+
+                $likes = $user->likes()->get();
+                $isFound = false;
+                //loop over all likes of user
+                foreach ($likes as $li) {
+                    //check if like isnt bound to a category(error)
+                    if (!isset($li->category)) {
+                        continue;
+                    }
+                    //loop over categories of celebrity
+                    foreach ($category as $cat) {
+                        //check if current category equals category of like
+                        if ($cat->category == $li->category->category) {
+                            //increment score of like and set isFound boolean to true
+                            $li->score++;
+                            $li->save();
+                            $isFound = true;
+                        }
+                    }
                 }
-                //loop over categories of celebrity
-                foreach ($category as $cat) {
-                    //check if current category equals category of like
-                    if ($cat->category == $li->category->category) {
-                        //increment score of like and set isFound boolean to true
-                        $li->score++;
-                        $li->save();
-                        $isFound = true;
+                //if isfound return, else create a new like relation
+                if (!$isFound) {
+                    foreach ($category as $cat) {
+                        $user->likes()->save(new Like(["score" => 1]));
+                        $like = $user->likes()->latest()->first();
+                        $like->category()->save($cat);
                     }
                 }
             }
-            //if isfound return, else create a new like relation
-            if (!$isFound) {
-                foreach ($category as $cat) {
-                    $user->likes()->save(new Like(["score" => 1]));
-                    $like = $user->likes()->latest()->first();
-                    $like->category()->save($cat);
-                }
-            }
+            return ["is_successful"=>$isSuccessful];
         }
-        return ["is_successful"=>$isSuccessful];
-    }
 
     public function unFollowCeleb(Request $request){
         $userId = $request->input("user_id");

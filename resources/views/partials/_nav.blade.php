@@ -50,7 +50,7 @@
         display: none;
     }
     .search-form .form-group:hover,
-    .search-form .form-group:active {
+    .search-form .form-group:hover {
         width: 100%;
         max-width:200px;
         border-radius: 4px 25px 25px 4px;
@@ -92,7 +92,7 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" style="visibility: @yield('visible');">
             <ul class="nav navbar-nav">
                 <li class="@yield('homeActive')" ><a href="/home/{{ $user->id }}/0"><strong>Home</strong></a></li>
-                <li class="@yield('exploreActive')"><a href="/explore"><strong>Explore</strong></a></li>
+                <li class="@yield('exploreActive')"><a href="/{{ $user->id }}/explore"><strong>Explore</strong></a></li>
                 <li class="@yield('celebritiesActive') dropdown">
 
 
@@ -106,17 +106,22 @@
                         <li><a href="/{{ $user->id }}/celebrities/regions"><strong>Regions</strong></a></li>
                     </ul>
                 </li>
-                <li class="@yield('aboutActive')"><a href="/about"><strong>About</strong></a></li>
-                <li class="@yield('contactActive')"><a href="/contact"><strong>Contact</strong></a></li>
+                <li class="@yield('aboutActive')"><a href="/{{ $user->id }}/about"><strong>About</strong></a></li>
+                <li class="@yield('contactActive')"><a href="/{{ $user->id }}/contact"><strong>Contact</strong></a></li>
 
                 <li>
-                    <form action="" class="search-form narvbar-form navbar-left" style="margin-bottom:-8px;margin-top: 7px;margin-left: 7px;">
+
+                        {!! Form::open(array('url' => "/$user->id/search",'class' => 'search-form narvbar-form navbar-left','style' => 'margin-bottom:-8px;margin-top: 7px;margin-left: 7px;')) !!}
 
                         <div class="form-group has-feedback" style="height:inherit; background-color: transparent;">
-                            <label for="search" class="sr-only">Search</label>
-                            <input type="text" class="form-control" name="search" id="search" placeholder="search">
+
+                            {{Form::label('search', 'Search:',array('class' => 'sr-only') )}}
+                            {{Form::text('search', null,array('class' => 'form-control','placeholder' => 'Search' ))}}
                             <span class="glyphicon glyphicon-search form-control-feedback "></span>
+
                         </div>
+
+                        {!! Form::close() !!}
 
                     </form>
                 </li>

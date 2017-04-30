@@ -1,5 +1,5 @@
 @extends('main')
-
+@section('title','| '.$user->name)
 @section('content')
     <div class="container">
         <h1>Edit Profile</h1>
@@ -12,6 +12,7 @@
                     <h6>Upload a different photo...</h6>
 
                     <input type="file" class="form-control">
+                    <h3><a class="" href="/following/{{$user->id}}">Following </a>: {{sizeof($celebrities)}}</h3>
                 </div>
             </div>
 

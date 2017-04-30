@@ -3,7 +3,7 @@
         <img src="{{ URL::asset("$usrimg") }}" class="media-object" style="max-width:45px">
     </div>
     <div class="media-body ">
-        <a href=""><h4 class="media-heading">{{ $usrname }}</h4></a>
+        <a href="/{{$user->id}}/timeline/"><h4 class="media-heading">{{ $usrname }}</h4></a>
         <p style="margin-bottom: 5px;"><span class="fa fa-{{ $postapp }} media-object" style="padding-right: 10px; padding-top: 5px; float: left" >  </span> {{ $date }} </p>
 
         <div>
@@ -11,7 +11,6 @@
                 @if(!is_array($postimg))
 
                     <img id="myImg" onclick='img( this , "{{ $cap }}" )' src="{{ $postimg }}" style="width:100%">
-                    <span class="glyphicon-heart"> </span>
 
                     @else
                         @if(sizeof($postimg) == 2)
