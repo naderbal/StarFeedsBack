@@ -16,6 +16,7 @@ Route::get('/', function () {
 });
 
 Route::post('/save-user','UserController@save');
+Route::post('/save-admin','UserController@saveAdmin');
 Route::post('/follow','UserController@followCeleb');
 Route::post('/un-follow','UserController@unFollowCeleb');
 
@@ -25,6 +26,8 @@ Route::get('/user-feeds/{id}/{page}','UserController@getUserFeeds');
 Route::get('/new-user-feeds/{id}/{postId}','UserController@getNewUserFeeds');
 Route::get('/user-following/{id}','UserController@getUserFollowing');
 Route::get('/api/save','apiController@saveFeedsToDatabase');
+Route::post('/api/login-email','UserController@loginEmail');
+Route::post('/api/login-facebook','UserController@loginFacebook');
 
 Route::get('/testInstagram','apiController@testInstagram');
 

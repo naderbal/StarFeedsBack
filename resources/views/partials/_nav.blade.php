@@ -122,8 +122,6 @@
                         </div>
 
                         {!! Form::close() !!}
-
-                    </form>
                 </li>
 
             </ul>

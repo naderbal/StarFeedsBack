@@ -106,7 +106,6 @@ class UserWebController extends Controller
 
         $user = User::find($id);
         $celeb = Celebrity::find($celebid);
-
         if($user == null || $celeb == null){
             return;
         }
@@ -160,7 +159,6 @@ class UserWebController extends Controller
         $suggestionCelebs = [];
         foreach($likes as $like){
             $category = $like->category;
-            //todo ask kinane is there a way to get children of node (all the celebs where they have this category)
             $celebs = Celebrity::get();
             foreach($celebs as $celeb){
                 // check if celeb belongs to category
@@ -172,6 +170,7 @@ class UserWebController extends Controller
                 }
             }
         }
+       // return array_splice($suggestionCelebs,0,5);
         return array_only($suggestionCelebs,[0,1,2,3,4]);
     }
 
@@ -322,7 +321,6 @@ class UserWebController extends Controller
         $isSuccessful = false;
         $user = User::find($id);
         $celeb = Celebrity::find($celebid);
-
         if($user == null || $celeb == null){
             $isSuccessful = false;
         } else {
@@ -349,17 +347,16 @@ class UserWebController extends Controller
                     }
                 }
             }
-
         }
         return redirect()->back();
     }
 
-    public function getCelebsByName(Request $request, $userId)
+    public function getCelebsByName(Request $request, $id)
     {
-        $user = User::find($userId);
+        $user = User::find($id);
         $celebsSearched = [];
         $isFollowed = false;
-        $celebsFollowed = User::find($userId)->celebrity;
+        $celebsFollowed = User::find($id)->celebrity;
         $celebs = Celebrity::where('name','=',$request->input("search"))->get();
         //todo ask kinane like instead of equals
         foreach($celebs as $celeb){

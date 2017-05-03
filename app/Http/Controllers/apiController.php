@@ -127,7 +127,6 @@ class apiController extends Controller
                     foreach ($fbResult['data'] as $data) {
                         if (count(FacebookFeed::where('feed_id','=',$data['id'])->get()) > 0) {
                             // facebook feed previously saved
-                            echo"fb found";
                             break;
                         }
                         $feedId = $data['id'];
@@ -145,6 +144,9 @@ class apiController extends Controller
                         if(array_key_exists('link',$data)){
                             $feedLink = $data['link'];
                         }
+                        if($fbId == 'StarFeedsDev'){
+                            echo "succ";
+                        }
                         $facebookFeed = new FacebookFeed(['feed_id' => $feedId,
                             "celeb_id"=>$celebId,
                             "feed_type"=> $feedType,
@@ -158,6 +160,8 @@ class apiController extends Controller
                 }catch (ErrorException $e){
                     echo "ex: ".$e;
                 }
+            }else{
+                echo "null celeb";
             }
             $twtId = $celeb->twt_id;
             if ($twtId != '' && $twtId != null) {
@@ -229,7 +233,7 @@ class apiController extends Controller
         echo $twtJson;*/
     }
     public function testFacebook(){
-        $twtResult = $this->makeFbCall('cristiano');//selenagomez
+        $twtResult = $this->makeFbCall('StarFeedsDev');//selenagomez
         //$fbResult = $this->makeFbCall("cristiano");
         //print_r($fbResult);
         print_r($twtResult);

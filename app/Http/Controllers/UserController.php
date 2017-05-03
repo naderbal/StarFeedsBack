@@ -21,6 +21,63 @@ class UserController extends Controller
     public $INSTAGRAM_TAG = "Instagram";
     public $count = 10;
 
+    public function loginEmail(Request $request){
+        $email = $request->input("email");
+        $password = $request->input("password");
+        $user = User::where('email','=',$email)->first();
+        if($user == null){
+            return "false";
+        }
+        if(!$user->password == $password){
+            return "false";
+        }
+        return [
+            'data' =>
+                [
+                    "user" =>
+                    [
+                        "id"=>$user->id,
+                        "name"=>$user->name,
+                        "email"=>$user->email,
+                    ]
+                ]
+        ];
+    }
+
+    public function loginFacebook(Request $request){
+        $id = $request->input("id");
+        $name = $request->input("name");
+        $email = $request->input("email");
+        $user = User::where('fb_id','=',$id)->first();
+        if($user == null){
+            $newUser = $this->saveFacebookUser($id, $name, $email);
+            if($newUser != null){
+                return [
+                    'data' =>
+                        [
+                            "user" =>
+                                [
+                                    "id"=>$newUser->id,
+                                    "name"=>$newUser->name,
+                                    "email"=>$newUser->email,
+                                ]
+                        ]
+                ];
+            }
+        }
+        return [
+            'data' =>
+                [
+                    "user" =>
+                        [
+                            "id"=>$user->id,
+                            "name"=>$user->name,
+                            "email"=>$user->email,
+                        ]
+                ]
+        ];
+    }
+
     public function save(Request $request){
         $name = $request->input("name");
         $email = $request->input("email");
@@ -32,6 +89,28 @@ class UserController extends Controller
             $user = new User(["name"=>$name,"email"=>$email,"password"=>$password,"gender"=>$gender,"age"=>$age]);
             $user->save();
         }
+    }
+
+    public function saveAdmin(Request $request){
+        $name = $request->input("name");
+        $email = $request->input("email");
+        $password = $request->input("password");
+        $gender = $request->input("gender");
+        $age = $request->input("age");
+        $isAdmin = true;
+        if(User::where("email",'=',$email)->first() === null){
+            $user = new User(["name"=>$name,"email"=>$email,"password"=>$password,"gender"=>$gender,"age"=>$age,'is_admin'=>$isAdmin]);
+            $user->save();
+        }
+    }
+
+    public function saveFacebookUser($fbId, $name, $email){
+        $user = null;
+        if(User::where("fb_id",'=',$fbId)->first() === null){
+            $user = new User(["name"=>$name,"email"=>$email,"fb_id"=>$fbId]);
+            $user->save();
+        }
+        return $user;
     }
 
     public function getUserFollowing($id){

@@ -8,7 +8,7 @@ class User extends NeoEloquent
 {
     protected $label = 'User';
 
-    protected $fillable = ['name','email','password','gender','age'];
+    protected $fillable = ['name','email','password','gender','age','fb_id','is_admin'];
 
     public function celebrity()
     {

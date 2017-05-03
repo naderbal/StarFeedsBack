@@ -19,7 +19,7 @@
                 </div>
                 <h3>Personal info</h3>
 
-                {!! Form::open(array('url' => '/add-celebrity','class'=>'form-horizontal')) !!}
+                {!! Form::open(array('url' => '/add-celeb','class'=>'form-horizontal')) !!}
 
                 <div class="form-group">
                     {{Form::label('celebname', 'Name:',array('class' => 'col-lg-3'))}}

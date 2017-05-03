@@ -151,12 +151,17 @@ class CelebrityController extends Controller
 
         try {
             $result = file_get_contents($url);
-            $decoded = json_decode($result, true);
+            $decoded = json_decode($result, false);
         }catch (ErrorException $e){
             echo 'exe'. $e;
             return null;
         }
-        return $decoded["data"]["url"];
+        $res = null;
+        /*if(array_key_exists('data',$decoded)){
+            $res = $decoded["data"]["url"];
+        }*/
+        $res = $decoded->data->url;
+        return $res;
     }
 
 }
