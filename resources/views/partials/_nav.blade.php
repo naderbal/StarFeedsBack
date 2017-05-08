@@ -88,90 +88,90 @@
             <a class="navbar-brand" Style="float:right" href="#"><span>StarFeeds</span></a>
         </div>
 
+        @if(Session::has('user'))
         <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" style="visibility: @yield('visible');">
-            <ul class="nav navbar-nav">
-                <li class="@yield('homeActive')" ><a href="/home/{{ $user->id }}/0"><strong>Home</strong></a></li>
-                <li class="@yield('exploreActive')"><a href="/{{ $user->id }}/explore"><strong>Explore</strong></a></li>
-                <li class="@yield('celebritiesActive') dropdown">
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" style="visibility: @yield('visible');">
+                <ul class="nav navbar-nav">
+                    <li class="@yield('homeActive')" ><a href="/home"><strong>Home</strong></a></li>
+                    <li class="@yield('exploreActive')"><a href="/explore"><strong>Explore</strong></a></li>
+                    <li class="@yield('celebritiesActive') dropdown">
 
 
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><strong>Celebrities</strong> <span class="caret"></span></a>
-                    <ul class="dropdown-menu" style="background-color: #eee; border: none;">
-                        <li><a href="/{{ $user->id }}/celebrities/all" ><strong>All</strong></a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="/{{ $user->id }}/celebrities/categories"><strong>Categories</strong></a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="/{{ $user->id }}/celebrities/regions"><strong>Regions</strong></a></li>
-                    </ul>
-                </li>
-                <li class="@yield('aboutActive')"><a href="/{{ $user->id }}/about"><strong>About</strong></a></li>
-                <li class="@yield('contactActive')"><a href="/{{ $user->id }}/contact"><strong>Contact</strong></a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><strong>Celebrities</strong> <span class="caret"></span></a>
+                        <ul class="dropdown-menu" style="background-color: #eee; border: none;">
+                            <li><a href="/celebrities/all" ><strong>All</strong></a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="/celebrities/categories"><strong>Categories</strong></a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="/celebrities/regions"><strong>Regions</strong></a></li>
+                        </ul>
+                    </li>
+                    {{--<li class="@yield('aboutActive')"><a href="/{{ $user->id }}/about"><strong>About</strong></a></li>--}}
+                    <li class="@yield('contactActive')"><a href="/contact"><strong>Contact</strong></a></li>
+                    @if(Session::get('user')->is_admin)
 
-                <li>
+                        @include('partials._adminNav')
 
-                        {!! Form::open(array('url' => "/$user->id/search",'class' => 'search-form narvbar-form navbar-left','style' => 'margin-bottom:-8px;margin-top: 7px;margin-left: 7px;')) !!}
+                    @endif
+                    <li>
 
-                        <div class="form-group has-feedback" style="height:inherit; background-color: transparent;">
+                            {!! Form::open(array('url' => "/search",'class' => 'search-form narvbar-form navbar-left','style' => 'margin-bottom:-8px;margin-top: 7px;margin-left: 7px;')) !!}
 
-                            {{Form::label('search', 'Search:',array('class' => 'sr-only') )}}
-                            {{Form::text('search', null,array('class' => 'form-control','placeholder' => 'Search' ))}}
-                            <span class="glyphicon glyphicon-search form-control-feedback "></span>
+                            <div class="form-group has-feedback" style="height:inherit; background-color: transparent;">
 
-                        </div>
+                                {{Form::label('search', 'Search:',array('class' => 'sr-only') )}}
+                                {{Form::text('search', null,array('class' => 'form-control','placeholder' => 'Search' ))}}
+                                <span class="glyphicon glyphicon-search form-control-feedback "></span>
 
-                        {!! Form::close() !!}
-                </li>
+                            </div>
 
-            </ul>
+                            {!! Form::close() !!}
+                    </li>
+
+                </ul>
 
 
 
-            <ul class="nav navbar-nav navbar-right" >
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <span class="glyphicon glyphicon-user">
-                        </span> 
-                        <strong>Account</strong>
-                        <span class="glyphicon glyphicon-chevron-down"></span>
-                    </a>
-                    <ul class="dropdown-menu" style="background-color: #eee; border: none;">
-                        <li>
-                            <div class="navbar-login">
-                                <div class="row">
-                                    <div class="col-lg-4">
-                                        <p class="text-center">
-                                            <span class="glyphicon icon-size">
-                                                <img src="user->image" class="img-responsive">
-                                            </span>
-                                        </p>
-                                    </div>
-                                    <div class="col-lg-8">
-                                        <p class="text-left"><strong>{{ $user->name }}</strong></p>
-                                        <p class="text-left small">{{ $user->email }}</p>
-                                        <p class="text-left">
-                                            <a href="/edit-account/{{ $user->id }}" class="btn btn-primary btn-block btn-sm">Edit Account</a>
-                                        </p>
+                <ul class="nav navbar-nav navbar-right" >
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <span class="glyphicon glyphicon-user">
+                            </span> 
+                            <strong>Account</strong>
+                            <span class="glyphicon glyphicon-chevron-down"></span>
+                        </a>
+                        <ul class="dropdown-menu" style="background-color: #eee; border: none;">
+                            <li>
+                                <div class="navbar-login">
+                                    <div class="row">
+                                        <div class="col-lg-8">
+                                            <p class="text-left"><strong>{{ Session::get('user')->name }}</strong></p>
+                                            <p class="text-left small">{{ Session::get('user')->email }}</p>
+                                            <p class="text-left">
+                                                <a href="/edit-account" class="btn btn-primary btn-block btn-sm">Edit Account</a>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </li>
-                        <li class="divider"></li>
-                        <li>
-                            <div class="navbar-login navbar-login-session">
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <p>
-                                            <a href="/" class="btn btn-danger btn-block">Logout</a>
-                                        </p>
+                            </li>
+                            <li class="divider"></li>
+                            <li>
+                                <div class="navbar-login navbar-login-session">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <p>
+                                                <a href="/logout" class="btn btn-danger btn-block">Logout</a>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </div><!-- /.navbar-collapse -->
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div><!-- /.navbar-collapse -->
+
+            @endif
     </div><!-- /.container-fluid -->
 </nav>

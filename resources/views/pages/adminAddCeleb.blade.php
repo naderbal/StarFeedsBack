@@ -11,12 +11,14 @@
 
             <!-- edit form column -->
             <div class="col-md-9 personal-info">
+                @if($error)
+                    <div class="alert alert-info alert-dismissable">
+                        <a class="panel-close close" data-dismiss="alert">×</a>
+                        <i class="fa fa-coffee"></i>
+                        <strong>Celebrity Already Exist!</strong>
+                    </div>
+                @endif
 
-                <div class="alert alert-info alert-dismissable">
-                    <a class="panel-close close" data-dismiss="alert">×</a>
-                    <i class="fa fa-coffee"></i>
-                    <strong>  </strong>
-                </div>
                 <h3>Personal info</h3>
 
                 {!! Form::open(array('url' => '/add-celeb','class'=>'form-horizontal')) !!}
@@ -68,5 +70,4 @@
             </div>
         </div>
     </div>
-    <hr>
 @endsection

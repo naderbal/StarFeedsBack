@@ -144,16 +144,6 @@
                                'cap'=>     $feed->text
                               ])
 
-
-                @elseif(str_contains($feed->feedType,"text") )
-
-                    @include('partials._txtPost',
-                            ['post'=>    $feed->text,
-                             'usrname'=> $feed->celebName,
-                             'usrimg'=>  $feed->imageProfile,
-                             'postapp'=> $feed->platform,
-                             'date'=>    $feed->date
-                            ])
                 @endif
 
             @endforeach

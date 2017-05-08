@@ -1,15 +1,5 @@
 @extends('main')
 
-@section('stylesheet')
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-social/5.1.1/bootstrap-social.css" crossorigin="anonymous">
-
-@endsection
-
-@section('homeLink', "/")
-@section('visible','hidden')
-
-
 @section('content')
 
     <div class="row">
@@ -17,19 +7,27 @@
             <div class="jumbotron">
                 <h3>Sign In</h3>
                 <hr>
-                {!! Form::open(array('url' => 'foo/bar')) !!}
+                {!! Form::open(array('url' => '/login')) !!}
 
-                    <div id="Form" class="form-group">
-                        {{Form::label('email', 'Email:' )}}
-                        {{Form::text('email', null,array('class' => 'form-control','placeholder' => 'Email Address or Username','required' => 'required'))}}
-                    </div>
-                    <div class="form-group">
-                        {{Form::label('password', 'Password:' )}}
-                        {{Form::password('password',null,array('class' => 'form-control','placeholder' => 'password','required' => 'required'))}}
-                    </div>
-                    <div class="form-group">
-                        {{Form::submit('LogIn',array('class' => 'btn btn-success center-block'))}}
-                    </div>
+                <div class="form-group">
+                    {{Form::label('email', 'Email:' )}}
+                    {{Form::email('email', null,array('class' => 'form-control','placeholder' => 'Email Address','required' => 'required'))}}
+                </div>
+                <div class="pass form-group">
+                    {{Form::label('password', 'Password:' )}}
+                    {{Form::password('password',null,array('class' => 'form-control','placeholder' => 'password','required' => 'required'))}}
+                    @if(!$false)
+
+                        <small class="form-text text-muted">*Wrong Email or Password</small>
+
+                    @endif
+                </div>
+
+
+
+                <div class="form-group">
+                    {{Form::submit('LogIn',array('class' => 'btn btn-success center-block'))}}
+                </div>
 
                 {!! Form::close() !!}
                 <hr>
@@ -46,47 +44,42 @@
             <div class="jumbotron">
                 <h3>Register</h3>
                 <hr>
-                {!! Form::open(array('url' => 'foo/bar','id' => 'form')) !!}
+                {!! Form::open(array('url' => '/register','id'=>'form')) !!}
 
-                    <div class="form-group">
-                        {{Form::label('fullname', 'Full Name:' )}}
-                        {{Form::text('fullname', null,array('class' => 'form-control','placeholder' => 'Full Name','required' => 'required'))}}
-                    </div>
+                <div class="form-group">
+                    {{Form::label('fullname', 'Full Name:' )}}
+                    {{Form::text('name', null,array('class' => 'form-control','placeholder' => 'Full Name','required' => 'required'))}}
+                </div>
 
-                    <div class="form-group">
-                        {{Form::label('username', 'User Name:' )}}
-                        {{Form::text('username', null,array('class' => 'form-control','placeholder' => 'User Name','required' => 'required'))}}
-                    </div>
+                <div class="form-group">
+                    {{Form::label('email', 'Email:' )}}
+                    {{Form::email('email', null,array('class' => 'form-control','placeholder' => 'Email Address','required' => 'required'))}}
+                </div>
 
-                    <div class="form-group">
-                        {{Form::label('email', 'Email:' )}}
-                        {{Form::text('email', null,array('class' => 'form-control','placeholder' => 'Email Address','required' => 'required'))}}
-                    </div>
+                <div class="pass form-group">
+                    {{Form::label('password', 'Password:' )}}
+                    {{Form::password('password',null,array('class' => 'form-control','id'=>'pass1','name' => 'password','placeholder' => 'password','required' => 'required'))}}
+                </div>
 
-                    <div class="form-group">
-                        {{Form::label('password', 'Password:' )}}
-                        {{Form::password('password',null,array('class' => 'form-control','name' => 'password','placeholder' => 'password','required' => 'required'))}}
-                    </div>
+                <div class="pass form-group">
+                    {{Form::label('confirmPassword', 'Confirm Password:' )}}
+                    {{Form::password('confirmPassword',null,array('class' => 'form-control','id'=>'pass1','name' => 'confirmPassword','placeholder' => 'password','required' => 'required'))}}
+                </div>
 
-                    <div class="form-group">
-                        {{Form::label('confirmPassword', 'Confirm Password:' )}}
-                        {{Form::password('confirmPassword',null,array('class' => 'form-control','name' => 'confirmPassword','placeholder' => 'password','required' => 'required'))}}
-                    </div>
+                <div class="gender form-group">
+                    {{Form::label('gender', 'Gender:' )}}
+                    {{Form::radio('gender',null,array('class' => 'form-control','value' => 'male'))}}Male
+                    {{Form::radio('gender',null,array('class' => 'form-control','value' => 'female'))}}Female
+                </div>
 
-                    <div class="form-group">
-                        {{Form::label('gender', 'Gender:' )}}
-                        {{Form::radio('gender',null,array('class' => 'form-control','value' => 'male'))}}Male
-                        {{Form::radio('gender',null,array('class' => 'form-control','value' => 'female'))}}Female
-                    </div>
+                <div class="form-group">
+                    {{Form::label('age', 'Age:')}}
+                    {{Form::number('age',null,array('class' => 'form-control','placeholder'=>'Age','required' => 'required','style'=>'width:70px'))}}
+                </div>
 
-                    <div class="form-group">
-                        {{Form::label('dateOfBirth', 'Date of Birth:')}}
-                        {{Form::date('dateOfBirth',null,array('class' => 'form-control','required' => 'required'))}}
-                    </div>
-
-                    <div class="form-group">
-                        {{Form::submit('Register',array('class' => 'btn btn-success center-block'))}}
-                    </div>
+                <div class="form-group">
+                    {{Form::submit('Register',array('class' => 'btn btn-success center-block'))}}
+                </div>
 
                 {!! Form::close() !!}
 
@@ -96,26 +89,36 @@
 
 @endsection
 
-
 <script>
+
+
     $(document).ready(function() {
-        $('#form').formValidation({
-            framework: 'bootstrap',
-            icon: {
-                valid: 'glyphicon glyphicon-ok',
-                invalid: 'glyphicon glyphicon-remove',
-                validating: 'glyphicon glyphicon-refresh'
-            },
-            fields: {
+
+        $('.pass input').addClass("form-control");
+        $('.pass input').attr("required","required");
+
+            $('#form').bootstrapValidator({
+                password: {
+                    validators: {
+                        stringLength: {
+                            min: 8,
+                        },
+                        notEmpty: {
+                            message: 'Please enter your Password'
+                        }
+                    }
+                },
                 confirmPassword: {
                     validators: {
-                        identical: {
-                            field: 'password',
-                            message: 'The password and its confirm are not the same'
+                        stringLength: {
+                            min: 8,
+                        },
+                        notEmpty: {
+                            message: 'Please confirm your Password'
                         }
                     }
                 }
-            }
+            });
         });
-    });
+
 </script>
