@@ -103,8 +103,8 @@
                             <li><a href="/celebrities/all" ><strong>All</strong></a></li>
                             <li role="separator" class="divider"></li>
                             <li><a href="/celebrities/categories"><strong>Categories</strong></a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="/celebrities/regions"><strong>Regions</strong></a></li>
+                            {{--<li role="separator" class="divider"></li>--}}
+                            {{--<li><a href="/celebrities/regions"><strong>Regions</strong></a></li>--}}
                         </ul>
                     </li>
                     {{--<li class="@yield('aboutActive')"><a href="/{{ $user->id }}/about"><strong>About</strong></a></li>--}}

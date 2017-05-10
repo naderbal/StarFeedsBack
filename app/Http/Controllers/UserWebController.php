@@ -65,6 +65,8 @@ class UserWebController extends Controller
             $user = new User(["name"=>$name,"email"=>$email,"password"=>$password,"gender"=>$gender,"age"=>$age]);
             $user->save();
         }
+        Session::put('user',$user);
+        return redirect('/celebrities/all');
     }
 
     public function saveAdmin(Request $request){
@@ -150,54 +152,54 @@ class UserWebController extends Controller
 
 
 
-    public function followCeleb($celebid){
+    public function followCeleb($celebId){
 
-        $user=Session::get('user');
-        $celeb = Celebrity::find($celebid);
+        $userId = Session::get('user')->id;
+
+        $isSuccessful = false;
+        $user = User::find($userId);
+        $celeb = Celebrity::find($celebId);
+
         if($user == null || $celeb == null){
-            return redirect()->back();
-        }
+            $isSuccessful = false;
+        }else if( count($user->celebrity()->where('name',$celeb->name)->get()) > 0){
+            $isSuccessful = false;
+        } else {
+            $user->celebrity()->save($celeb);
+            $celeb->followers++;
+            $celeb->save();
+            $isSuccessful = true;
+            $category = $celeb->category;
 
-        if( count($user->celebrity()->where('name',$celeb->name)->get()) > 0){
-            return redirect()->back();
-        }
-
-        $user->celebrity()->save($celeb);
-        $celeb->followers++;
-        $celeb->save();
-
-        $category = $celeb->category;
-
-        $likes = $user ->likes()->get();
-        $isFound = false;
-        //loop over all likes of user
-        foreach($likes as $li){
-            //check if like isnt bound to a category(error)
-            if(!isset($li->category)){
-                continue;
+            $likes = $user->likes()->get();
+            $isFound = false;
+            //loop over all likes of user
+            foreach ($likes as $li) {
+                //check if like isnt bound to a category(error)
+                if (!isset($li->category)) {
+                    continue;
+                }
+                //loop over categories of celebrity
+                foreach ($category as $cat) {
+                    //check if current category equals category of like
+                    if ($cat->category == $li->category->category) {
+                        //increment score of like and set isFound boolean to true
+                        $li->score++;
+                        $li->save();
+                        $isFound = true;
+                    }
+                }
             }
-            //loop over categories of celebrity
-            foreach($category as $cat){
-                //check if current category equals category of like
-                if($cat->category == $li->category->category) {
-                    //increment score of like and set isFound boolean to true
-                    $li->score++;
-                    $li->save();
-                    $isFound = true;
+            //if isfound return, else create a new like relation
+            if (!$isFound) {
+                foreach ($category as $cat) {
+                    $user->likes()->save(new Like(["score" => 1]));
+                    $like = $user->likes()->latest()->first();
+                    $like->category()->save($cat);
                 }
             }
         }
-        //if isfound return, else create a new like relation
-        if($isFound){
-            return redirect()->back();
-        }
-
-        foreach($category as $cat){
-            $user->likes()->save(new Like(["score"=>1]));
-            $like = $user->likes()->latest()->first();
-            $like->category()->save($cat);
-        }
-
+        Session::put('user',$user);
         return redirect()->back();
     }
 
@@ -280,7 +282,6 @@ class UserWebController extends Controller
     }
 
     public function getCategories(){
-        $user = Session::get('user');
         return view('pages.allCategories')->with("categories",Category::all());
     }
 
@@ -290,7 +291,6 @@ class UserWebController extends Controller
         $isFollowed = false;
         $celebsFollowed = $user->celebrity;
         $celebs = Celebrity::all();
-        //todo ask kinane like instead of equals
         foreach($celebs as $celeb){
             if($celebsFollowed->contains($celeb)) $isFollowed = true;
             else $isFollowed = false;
@@ -388,7 +388,7 @@ class UserWebController extends Controller
 
     public function unFollowCeleb($celebid){
         $isSuccessful = false;
-        $user = Session::get('user');
+        $user = User::find(Session::get('user')->id);
         $celeb = Celebrity::find($celebid);
         if($user == null || $celeb == null){
             $isSuccessful = false;
@@ -417,6 +417,7 @@ class UserWebController extends Controller
                 }
             }
         }
+        Session::put('user',$user);
         return redirect()->back();
     }
 
@@ -426,7 +427,8 @@ class UserWebController extends Controller
         $celebsSearched = [];
         $isFollowed = false;
         $celebsFollowed = $user->celebrity;
-        $celebs = Celebrity::where('name','=',$request->input("search"))->get();
+        $search = $request->input("search");
+        $celebs = Celebrity::where('name','=',$search)->get();
         //todo ask kinane like instead of equals
         foreach($celebs as $celeb){
             if($celebsFollowed->contains($celeb)) $isFollowed = true;
@@ -439,15 +441,19 @@ class UserWebController extends Controller
 
     public function getCelebsByCategory($categoryId)
     {
-        $user = Session::get('user');
+        $celebsFollowed = Session::get('user')->celebrity;
         $celebsOfCategory = [];
         $category = Category::find($categoryId);
         $celebs = Celebrity::all();
+        $isFollowed = false;
         foreach($celebs as $celeb){
             $categories = $celeb->category;
             foreach($categories as $cat){
                 if($cat == $category){
-                    array_push($celebsOfCategory,$celeb);
+                    if($celebsFollowed->contains($celeb)) $isFollowed = true;
+                    else $isFollowed = false;
+                    $cel = ["is_followed" => $isFollowed,"celeb" => $celeb];
+                    array_push($celebsOfCategory,$cel);
                 }
             }
         }

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     @include('partials._head')
+
 </head>
 <body id="body">
 
@@ -15,7 +16,6 @@
 
 </div>
 
-@include('partials._javascript')
 
 </body>
 

@@ -8,7 +8,7 @@
 
         <div>
             <div class="thumbnail center-block" style="max-width:500px;">
-                    <img id="myImg" onclick='img( this , "{{ $cap }}" )' src="{{ $postimg }}" style="width:100%">
+                    <img id="myImg" onclick='img( this , "{{ $cap }}" );' src="{{ $postimg }}" style="width:100%">
                 <div class="caption">
                     <p id="img-cap">{{ $cap }}</p>
                 </div>

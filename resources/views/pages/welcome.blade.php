@@ -15,7 +15,7 @@
                 </div>
                 <div class="pass form-group">
                     {{Form::label('password', 'Password:' )}}
-                    {{Form::password('password',null,array('class' => 'form-control','placeholder' => 'password','required' => 'required'))}}
+                    {{Form::password('password',array('class' => 'form-control','placeholder' => 'Password','required' => 'required'))}}
                     @if(!$false)
 
                         <small class="form-text text-muted">*Wrong Email or Password</small>
@@ -58,12 +58,12 @@
 
                 <div class="pass form-group">
                     {{Form::label('password', 'Password:' )}}
-                    {{Form::password('password',null,array('class' => 'form-control','id'=>'pass1','name' => 'password','placeholder' => 'password','required' => 'required'))}}
+                    {{Form::password('password',array('class' => 'form-control','id'=>'pass1','name' => 'password','placeholder' => 'Password','required' => 'required'))}}
                 </div>
 
-                <div class="pass form-group">
+                <div class="form-group">
                     {{Form::label('confirmPassword', 'Confirm Password:' )}}
-                    {{Form::password('confirmPassword',null,array('class' => 'form-control','id'=>'pass1','name' => 'confirmPassword','placeholder' => 'password','required' => 'required'))}}
+                    {{Form::password('confirmPassword',array('class' => 'form-control','id'=>'pass1','name' => 'confirmPassword','placeholder' => 'Confirm Password','required' => 'required'))}}
                 </div>
 
                 <div class="gender form-group">
@@ -74,7 +74,7 @@
 
                 <div class="form-group">
                     {{Form::label('age', 'Age:')}}
-                    {{Form::number('age',null,array('class' => 'form-control','placeholder'=>'Age','required' => 'required','style'=>'width:70px'))}}
+                    {{Form::number('age',null,array('class' => 'form-control','placeholder'=>'Age','required' => 'required','style'=>'width:70px;position:relative;'))}}
                 </div>
 
                 <div class="form-group">
@@ -91,11 +91,7 @@
 
 <script>
 
-
     $(document).ready(function() {
-
-        $('.pass input').addClass("form-control");
-        $('.pass input').attr("required","required");
 
             $('#form').bootstrapValidator({
                 password: {

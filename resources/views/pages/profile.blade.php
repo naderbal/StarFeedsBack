@@ -32,12 +32,12 @@
 
                 <div class="pass form-group">
                     {{Form::label('password', 'Password:' )}}
-                    {{Form::password('password',null,array('class' => 'form-control','placeholder' => 'password','required' => 'required' ))}}
+                    {{Form::password('password',array('class' => 'form-control','placeholder' => 'password','required' => 'required' ))}}
                 </div>
 
                 <div class="pass form-group">
                     {{Form::label('confirmPassword', 'Confirm Password:' )}}
-                    {{Form::password('confirmPassword',null,array('class' => 'form-control','placeholder' => 'password','required' => 'required' ))}}
+                    {{Form::password('confirmPassword',array('class' => 'form-control','placeholder' => 'Password','required' => 'required' ))}}
                 </div>
 
                 <div class="form-group">
@@ -75,13 +75,3 @@
         </div>
     </div>
 @endsection
-
-<script>
-
-
-    $(document).ready(function() {
-        $('.pass input').addClass("form-control");
-        $('.pass input').attr("required", "required");
-    });
-
-</script>

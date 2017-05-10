@@ -3,10 +3,10 @@
         <img src="{{ URL::asset("$usrimg") }}" class="media-object" style="max-width:45px">
     </div>
     <div class="media-body">
-        <h4 class="media-heading"><a href="/timeline/{{$usrname}}" style="color:inherit">{{ $usrname }}</a></h4>
-        <p style="margint-bottom:5px;"><span class="fa fa-{{ $postapp }} media-object" style="padding-right: 10px; padding-top: 5px; float: left;" ></span>{{ $date }}</p>
+        <h4 class="media-heading"><a href="/timeline/{{$usrname}}" style="color:inherit">{{ $usrname }}</a> <small>   {{ $date }}</small></h4>
+        <p style="margint-bottom:5px;"><span class="fa fa-{{ $postapp }} media-object" style="padding-right: 10px; padding-top: 5px; float: left;" ></span></p>
 
-        <p>
+        <p style="font-size: medium">
             {{ $post }}
         </p>
     </div>
