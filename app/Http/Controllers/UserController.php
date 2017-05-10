@@ -84,16 +84,12 @@ class UserController extends Controller
         $password = $request->input("password");
         $gender = $request->input("gender");
         $age = $request->input("age");
+        $isAdmin = false;
 
         $isSuccessful = false;
 
         if(User::where("email",'=',$email)->first() === null){
-            $user = new User([
-                "name"=>$name,
-                "email"=>$email,
-                "password"=>$password,
-                "gender"=>$gender,
-                "age"=>$age]);
+            $user = new User(["name"=>$name,"email"=>$email,"password"=>$password,"gender"=>$gender,"age"=>$age,'is_admin'=>$isAdmin]);
             $user->save();
             $isSuccessful = true;
            return [

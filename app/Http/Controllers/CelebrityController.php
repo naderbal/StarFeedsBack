@@ -52,11 +52,6 @@ class CelebrityController extends Controller
         return $celebsOfCategory;
     }
 
-    public function getCelebsByCountry($countryId)
-    {
-
-    }
-
     public function getCeleb($celebId, $userId)
     {
         $isFollowed = false;

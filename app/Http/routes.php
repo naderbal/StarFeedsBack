@@ -44,22 +44,33 @@ Route::get('/get-celebs-country/{country}','CelebrityController@getCelebsByCount
 Route::get('/celeb-feeds/{celebId}','CelebrityController@getCelebFeeds');
 
 //web
-Route::get('/home/{id}/{postId}','UserWebController@getUserFeeds');
-Route::get('/{id}/celebrities/all','UserWebController@getCelebrities');
-Route::get('/followedCelebs/{id}', 'UserWebController@getFollowedCelebs');
-Route::get('/{id}/celebrities/categories','UserWebController@getCategories');
-Route::get('/{id}/celebrities/region','UserWebController@getRegions');
-Route::get('/{id}/timeline/{celebid}','UserWebController@getCelebFeeds');
-Route::get('/edit-account/{id}','UserWebController@getUser');
-Route::get('/{id}/admin/add-celebrity','UserWebController@getAdminAddCeleb');
-Route::get('/{id}/explore','UserWebController@getExploreFeeds');
-Route::get('/{id}/follow/{celebid}','UserWebController@followCeleb');
-Route::get('/{id}/unfollow/{celebid}','UserWebController@unFollowCeleb');
-Route::get('/{id}/celebrities/category/{categoryId}','UserWebController@getCelebsByCategory');
-Route::post('/{id}/search','UserWebController@getCelebsByName');
-Route::get('/{id}/suggestions','UserWebController@getSuggestions');
-Route::get('/{id}/about','UserWebController@getAbout');
-Route::get('/{id}/contact','UserWebController@getContact');
-Route::get('/following/{id}','UserWebController@getFollowedCelebs');
+
+Route::group(['middleware' => ['web']],function(){
+
+    Route::get('/','UserWebController@getWelcomePage');
+    Route::post('/register','UserWebController@save');
+    Route::post('/login','UserWebController@loginEmail');
+    Route::get('/home','UserWebController@getUserFeeds');
+    Route::get('/logout','UserWebController@logOut');
+    Route::post('/add-celeb','UserWebController@addCeleb');
+    Route::post('/add-admin','UserWebController@saveAdmin');
+    Route::post('/search','UserWebController@getCelebsByName');
+    Route::get('/celebrities/all','UserWebController@getCelebrities');
+    Route::get('/followedCelebs', 'UserWebController@getFollowedCelebs');
+    Route::get('/celebrities/categories','UserWebController@getCategories');
+    Route::get('/timeline/{celebName}','UserWebController@getCelebFeeds');
+    Route::get('/edit-account','UserWebController@getUser');
+    Route::get('/admin/add-celebrity','UserWebController@getAdminAddCeleb');
+    Route::get('/explore','UserWebController@getExploreFeeds');
+    Route::get('/follow/{celebid}','UserWebController@followCeleb');
+    Route::get('/unfollow/{celebid}','UserWebController@unFollowCeleb');
+    Route::get('/celebrities/category/{categoryId}','UserWebController@getCelebsByCategory');
+    Route::get('/suggestions','UserWebController@getSuggestions');
+//    Route::get('/about','UserWebController@getAbout');
+    Route::get('/contact','UserWebController@getContact');
+    Route::get('/following','UserWebController@getFollowedCelebs');
+    Route::get('/admin/add-admin','UserWebController@getAddAdmin');
+
+});
 
 /////

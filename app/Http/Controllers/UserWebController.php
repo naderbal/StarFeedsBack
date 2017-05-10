@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use App\FacebookFeed;
 use App\TwitterFeed;
 use App\Post;
+use Session;
 
 class UserWebController extends Controller
 {
@@ -21,6 +22,37 @@ class UserWebController extends Controller
     public $TWITTER_TAG = "Twitter";
     public $INSTAGRAM_TAG = "Instagram";
     public $count = 10;
+
+    public function getWelcomePage(){
+        if(Session::has('user')){
+            return redirect('/home');
+        }
+        else {
+            return view("pages.welcome")->with("false", true);
+        }
+    }
+
+    public function loginEmail(Request $request){
+        $email = $request->input("email");
+        $password = $request->input("password");
+        $user = User::where('email','=',$email)->first();
+        if($user == null || !$user->password == $password){
+            return view("pages.welcome")->with("false",false);
+        }
+//        if(!$user->password == $password){
+//            return view('pages.home')->with("false","false");
+//        }
+
+        Session::put('user',$user);
+
+        return redirect("/home");
+
+    }
+
+    public function logOut(){
+        Session::flush();
+        return redirect('/');
+    }
 
     public function save(Request $request){
         $name = $request->input("name");
@@ -33,13 +65,31 @@ class UserWebController extends Controller
             $user = new User(["name"=>$name,"email"=>$email,"password"=>$password,"gender"=>$gender,"age"=>$age]);
             $user->save();
         }
+        Session::put('user',$user);
+        return redirect('/celebrities/all');
     }
 
+    public function saveAdmin(Request $request){
+        $name = $request->input("name");
+        $email = $request->input("email");
+        $password = $request->input("password");
+        $gender = $request->input("gender");
+        $age = $request->input("age");
+        $is_admin = true;
+        if(User::where("email",'=',$email)->first() === null){
+            $user = new User(["name"=>$name,"email"=>$email,"password"=>$password,"gender"=>$gender,"age"=>$age,'is_admin'=>$is_admin]);
+            $user->save();
+            return redirect()->back();
+        }
+        else
+            return redirect()->back()->with("error",true);
+    }
 
-    public function getUserFeeds($id, $page){
+    public function getUserFeeds(){
 
         //get celebrities followed by user of id $id
-        $celebs = User::find($id)->celebrity;
+        $user=Session::get('user');
+        $celebs = $user->celebrity;
 
         $posts = array();
         foreach($celebs as $celeb){
@@ -72,17 +122,17 @@ class UserWebController extends Controller
         //sort the posts by timestamp
         usort($posts, array($this, 'cmp'));
         // if page equals 0, its requested by new feeds
-        if($page > 0) {
-            $pageCount = ($page - 1) * $this->count;
-            $posts = array_slice($posts, $pageCount, $this->count);
-        }
-        return view('pages.home')->with("data",$posts)->with("user",User::find($id))->with("suggestions",$this->get5Suggestions($id));
+//        if($page > 0) {
+//            $pageCount = ($page - 1) * $this->count;
+//            $posts = array_slice($posts, $pageCount, $this->count);
+//        }
+        return view('pages.home')->with("data",$posts)->with("suggestions",$this->get5Suggestions());
     }
 
-    public function getNewUserFeeds($id, $postId){
+    public function getNewUserFeeds($postId){
         $newFeeds = [];
         // request user feeds with 0 to indicate new feeds
-        $posts = $this->getUserFeeds($id, 0);
+        $posts = $this->getUserFeeds();
         $posts = $posts['data'];
         foreach($posts as $post){
             if($post->id == $postId)break;
@@ -102,59 +152,59 @@ class UserWebController extends Controller
 
 
 
-    public function followCeleb($id,$celebid){
+    public function followCeleb($celebId){
 
-        $user = User::find($id);
-        $celeb = Celebrity::find($celebid);
+        $userId = Session::get('user')->id;
+
+        $isSuccessful = false;
+        $user = User::find($userId);
+        $celeb = Celebrity::find($celebId);
+
         if($user == null || $celeb == null){
-            return;
-        }
+            $isSuccessful = false;
+        }else if( count($user->celebrity()->where('name',$celeb->name)->get()) > 0){
+            $isSuccessful = false;
+        } else {
+            $user->celebrity()->save($celeb);
+            $celeb->followers++;
+            $celeb->save();
+            $isSuccessful = true;
+            $category = $celeb->category;
 
-        if( count($user->celebrity()->where('name',$celeb->name)->get()) > 0){
-            return;
-        }
-
-        $user->celebrity()->save($celeb);
-        $celeb->followers++;
-        $celeb->save();
-
-        $category = $celeb->category;
-
-        $likes = $user ->likes()->get();
-        $isFound = false;
-        //loop over all likes of user
-        foreach($likes as $li){
-            //check if like isnt bound to a category(error)
-            if(!isset($li->category)){
-                continue;
+            $likes = $user->likes()->get();
+            $isFound = false;
+            //loop over all likes of user
+            foreach ($likes as $li) {
+                //check if like isnt bound to a category(error)
+                if (!isset($li->category)) {
+                    continue;
+                }
+                //loop over categories of celebrity
+                foreach ($category as $cat) {
+                    //check if current category equals category of like
+                    if ($cat->category == $li->category->category) {
+                        //increment score of like and set isFound boolean to true
+                        $li->score++;
+                        $li->save();
+                        $isFound = true;
+                    }
+                }
             }
-            //loop over categories of celebrity
-            foreach($category as $cat){
-                //check if current category equals category of like
-                if($cat->category == $li->category->category) {
-                    //increment score of like and set isFound boolean to true
-                    $li->score++;
-                    $li->save();
-                    $isFound = true;
+            //if isfound return, else create a new like relation
+            if (!$isFound) {
+                foreach ($category as $cat) {
+                    $user->likes()->save(new Like(["score" => 1]));
+                    $like = $user->likes()->latest()->first();
+                    $like->category()->save($cat);
                 }
             }
         }
-        //if isfound return, else create a new like relation
-        if($isFound){
-            return redirect()->back();
-        }
-
-        foreach($category as $cat){
-            $user->likes()->save(new Like(["score"=>1]));
-            $like = $user->likes()->latest()->first();
-            $like->category()->save($cat);
-        }
-
+        Session::put('user',$user);
         return redirect()->back();
     }
 
-    public function get5Suggestions($userId){
-        $user = User::find($userId);
+    public function get5Suggestions(){
+        $user = Session::get('user');
         $likes = $user->likes()->orderBy("score","desc")->get();
         $suggestionCelebs = [];
         foreach($likes as $like){
@@ -174,8 +224,8 @@ class UserWebController extends Controller
         return array_only($suggestionCelebs,[0,1,2,3,4]);
     }
 
-    public function getSuggestions($userId){
-        $user = User::find($userId);
+    public function getSuggestions(){
+        $user = Session::get('user');
         $likes = $user->likes()->orderBy("score","desc")->get();
         $suggestionCelebs = [];
         foreach($likes as $like){
@@ -192,14 +242,15 @@ class UserWebController extends Controller
                 }
             }
         }
-        return view('pages.suggestions')->with("suggestions",$suggestionCelebs)->with('user',$user);
+        return view('pages.suggestions')->with("suggestions",$suggestionCelebs);
     }
 
-    public function getExploreFeeds($id){
+    public function getExploreFeeds(){
         $explorePosts = [];
         $celebs = Celebrity::all();
         //shuffle($celebs);
-        $userCelebs = User::find($id)->celebrity;
+        $user = Session::get('user');
+        $userCelebs = $user->celebrity;
         foreach($celebs as $celeb){
             if($userCelebs->contains($celeb)){
                 continue;
@@ -227,19 +278,32 @@ class UserWebController extends Controller
                 $i++;
             }
         }
-        return view('pages.explore')->with('explorefeeds',$explorePosts)->with("user",User::find($id));
+        return view('pages.explore')->with('explorefeeds',$explorePosts);
     }
 
-    public function getCategories($id){
-        return view('pages.allCategories')->with("categories",Category::all())->with("user",User::find($id));
+    public function getCategories(){
+        return view('pages.allCategories')->with("categories",Category::all());
     }
 
-    public function getCelebrities($id){
-        return view('pages.allCelebrities')->with("celebrities",Celebrity::all())->with("user",User::find($id));
+    public function getCelebrities(){
+        $user = Session::get('user');
+        $celebsSearched = [];
+        $isFollowed = false;
+        $celebsFollowed = $user->celebrity;
+        $celebs = Celebrity::all();
+        foreach($celebs as $celeb){
+            if($celebsFollowed->contains($celeb)) $isFollowed = true;
+            else $isFollowed = false;
+            $cel = ["is_followed" => $isFollowed,"celeb" => $celeb];
+            array_push($celebsSearched,$cel);
+        }
+        return view('pages.allCelebrities')->with("celebrities",$celebsSearched);
     }
 
-    public function getCelebFeeds($id,$celebId){
-        $celeb = Celebrity::find($celebId);
+    public function getCelebFeeds($celebName){
+
+        $celeb = Celebrity::where('name','=',$celebName)->get();
+        $celeb=$celeb[0];
         if($celeb == null) return [];
         $posts = [];
         //get all FacebookFeeds of the celebrity
@@ -270,17 +334,22 @@ class UserWebController extends Controller
 
         //sort the posts by timestamp
         usort($posts, array($this, 'cmp'));
-        return view('pages.timeline')->with("data",$posts)->with("user",User::find($id))->with("celebrity",$celeb);
+        return view('pages.timeline')->with("data",$posts)->with("celebrity",$celeb);
     }
 
-    public function getUser($id){
-        $user=User::find($id);
-        $celebs=User::find($id)->celebrity;
-        return view('pages.profile')->with("user",$user)->with("celebrities",$celebs);
+    public function getUser(){
+        $user=Session::get('user');
+        $celebs=$user->celebrity;
+        return view('pages.profile')->with("celebrities",$celebs);
     }
 
-    public function getAdminAddCeleb($id){
-        return view('pages.adminAddCeleb')->with("user",User::find($id));
+    public function getAdminAddCeleb(){
+        $user=Session::get('user');
+        if($user->is_admin){
+            return view('pages.adminAddCeleb')->with("error",false);
+        }
+        else
+            return redirect()->back();
     }
 
     public function addCeleb(Request $request){
@@ -317,9 +386,9 @@ class UserWebController extends Controller
         return redirect()->back();
     }
 
-    public function unFollowCeleb($id,$celebid){
+    public function unFollowCeleb($celebid){
         $isSuccessful = false;
-        $user = User::find($id);
+        $user = User::find(Session::get('user')->id);
         $celeb = Celebrity::find($celebid);
         if($user == null || $celeb == null){
             $isSuccessful = false;
@@ -348,16 +417,18 @@ class UserWebController extends Controller
                 }
             }
         }
+        Session::put('user',$user);
         return redirect()->back();
     }
 
-    public function getCelebsByName(Request $request, $id)
+    public function getCelebsByName(Request $request)
     {
-        $user = User::find($id);
+        $user = Session::get('user');
         $celebsSearched = [];
         $isFollowed = false;
-        $celebsFollowed = User::find($id)->celebrity;
-        $celebs = Celebrity::where('name','=',$request->input("search"))->get();
+        $celebsFollowed = $user->celebrity;
+        $search = $request->input("search");
+        $celebs = Celebrity::where('name','=',$search)->get();
         //todo ask kinane like instead of equals
         foreach($celebs as $celeb){
             if($celebsFollowed->contains($celeb)) $isFollowed = true;
@@ -365,40 +436,53 @@ class UserWebController extends Controller
             $cel = ["is_followed" => $isFollowed,"celeb" => $celeb];
             array_push($celebsSearched,$cel);
         }
-        return view('pages.search')->with("result",$celebsSearched)->with("user",$user)->with("search",$request->input("search"));
+        return view('pages.search')->with("result",$celebsSearched)->with("search",$request->input("search"));
     }
 
-    public function getCelebsByCategory($id,$categoryId)
+    public function getCelebsByCategory($categoryId)
     {
-        $user = User::find($id);
+        $celebsFollowed = Session::get('user')->celebrity;
         $celebsOfCategory = [];
         $category = Category::find($categoryId);
         $celebs = Celebrity::all();
+        $isFollowed = false;
         foreach($celebs as $celeb){
             $categories = $celeb->category;
             foreach($categories as $cat){
                 if($cat == $category){
-                    array_push($celebsOfCategory,$celeb);
+                    if($celebsFollowed->contains($celeb)) $isFollowed = true;
+                    else $isFollowed = false;
+                    $cel = ["is_followed" => $isFollowed,"celeb" => $celeb];
+                    array_push($celebsOfCategory,$cel);
                 }
             }
         }
-        return view('pages.category')->with('celebrities',$celebsOfCategory)->with("user",$user)->with("category",$category);
+        return view('pages.category')->with('celebrities',$celebsOfCategory)->with("category",$category);
     }
 
-    public function getAbout($id){
-        $user=User::find($id);
-        return view('pages.about')->with('user',$user);
-    }
+//    public function getAbout($id){
+//        $user=User::find($id);
+//        return view('pages.about')->with('user',$user);
+//    }
 
-    public function getContact($id){
-        $user=User::find($id);
+    public function getContact(){
+        $user=Session::get('user');
         return view('pages.contact')->with('user',$user);
     }
 
-    public function getFollowedCelebs($id){
-        $user=User::find($id);
+    public function getFollowedCelebs(){
+        $user=Session::get('user');
         $celebs=$user->celebrity;
-        return view('pages.following')->with("following",$celebs)->with("user",$user);
+        return view('pages.following')->with("following",$celebs);
+    }
+
+    public function getAddAdmin(){
+        $user=Session::get('user');
+        if($user->is_admin) {
+            return view('pages.addAdmin')->with("error", false);
+        }
+        else
+            return redirect()->back();
     }
 
 }

@@ -111,7 +111,7 @@
 
         <div class="col-md-3" style="background-color: #eee;">
             <div class="text-center">
-                <img src="{{ $celebrity->fb_profile_url }}" class="avatar img-circle" style="max-width: 100px;margin-top: 5px;" alt="avatar">
+                <img src="{{ $celebrity->fb_profile_url }}" class="avatar img-circle" style="width:100px; max-width: 200px;margin-top: 5px;" alt="avatar">
                 <h2>{{ $celebrity->name }}</h2>
             </div>
         </div>

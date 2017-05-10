@@ -4,9 +4,9 @@
         <img src="{{ $celebimage }}" class="media-object" style="max-width:45px">
     </div>
     <div class="media-body ">
-        <h4 class="media-heading"><a href="/{{$id}}/timeline/{{ $celebid }}" style="color:inherit">{{$usrname}}</a></h4>
+        <h4 class="media-heading"><a href="/timeline/{{ $celebid }}" style="color:inherit">{{$usrname}}</a></h4>
         <div>
-            <a href="/{{$id}}/follow/{{$celebid}}" class="btn btn-success center-block" style="width:70%">Follow</a>
+            <a href="/follow/{{$celebid}}" class="btn btn-success center-block" style="width:70%">Follow</a>
         </div>
     </div>
 </div>

@@ -51,7 +51,7 @@
             @foreach( $categories as $category)
 
                 <div class="col-lg-2 col-md-3 col-xs-5" style="margin-bottom: 10px;">
-                    <a href="/{{$user->id}}/celebrities/category/{{ $category->id }}" class="btn btn-list center-block" > <h3> {{ $category->category }} </h3> </a>
+                    <a href="/celebrities/category/{{ $category->id }}" class="btn btn-list center-block" > <h3> {{ $category->category }} </h3> </a>
                 </div>
 
             @endforeach
