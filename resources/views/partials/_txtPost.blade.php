@@ -1,4 +1,4 @@
-<div class="media" style="background-color: #eee; padding:5px;">
+<div class="media secondary" style="border-radius:5px;border:1px solid #ccc;padding:5px;">
     <div class="media-left">
         <img src="{{ URL::asset("$usrimg") }}" class="media-object" style="max-width:45px">
     </div>

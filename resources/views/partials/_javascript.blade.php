@@ -5,6 +5,8 @@
 
 <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.3/js/bootstrapValidator.min.js"> </script>
 
+<script type="text/javascript" src="{{ URL::asset('js/material.min.js') }}"> </script>
+
 <script>
     $(document).ready(function() {
         $('#Form').bootstrapValidator({

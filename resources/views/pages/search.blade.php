@@ -28,6 +28,11 @@
                 </div>
 
             @endforeach
+            @if($result==null)
+
+                <p>No result found</p>
+
+            @endif
 
         </div>
     </div>

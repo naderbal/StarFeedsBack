@@ -74,8 +74,9 @@
 
 </style>
 
-<nav class="navbar navbar-default">
-    <div class="container-fluid" style="background: #eee;">
+
+<nav class="navbar navbar-default secondary " style="border-bottom:1px solid #ccc">
+    <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header" >
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
@@ -88,7 +89,7 @@
             <a class="navbar-brand" Style="float:right" href="#"><span>StarFeeds</span></a>
         </div>
 
-        @if(Session::has('user'))
+    @if(Session::has('user'))
         <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" style="visibility: @yield('visible');">
                 <ul class="nav navbar-nav">
@@ -116,17 +117,17 @@
                     @endif
                     <li>
 
-                            {!! Form::open(array('url' => "/search",'class' => 'search-form narvbar-form navbar-left','style' => 'margin-bottom:-8px;margin-top: 7px;margin-left: 7px;')) !!}
+                        {!! Form::open(array('url' => "/search",'class' => 'search-form narvbar-form navbar-left','style' => 'margin-bottom:-8px;margin-top: 7px;margin-left: 7px;')) !!}
 
-                            <div class="form-group has-feedback" style="height:inherit; background-color: transparent;">
+                        <div class="form-group has-feedback" style="height:inherit; background-color: transparent;">
 
-                                {{Form::label('search', 'Search:',array('class' => 'sr-only') )}}
-                                {{Form::text('search', null,array('class' => 'form-control','placeholder' => 'Search' ))}}
-                                <span class="glyphicon glyphicon-search form-control-feedback "></span>
+                            {{Form::label('search', 'Search:',array('class' => 'sr-only') )}}
+                            {{Form::text('search', null,array('class' => 'form-control','placeholder' => 'Search' ))}}
+                            <span class="glyphicon glyphicon-search form-control-feedback "></span>
 
-                            </div>
+                        </div>
 
-                            {!! Form::close() !!}
+                        {!! Form::close() !!}
                     </li>
 
                 </ul>
@@ -141,7 +142,7 @@
                             <strong>Account</strong>
                             <span class="glyphicon glyphicon-chevron-down"></span>
                         </a>
-                        <ul class="dropdown-menu" style="background-color: #eee; border: none;">
+                        <ul class="dropdown-menu primary" style=" border: none;">
                             <li>
                                 <div class="navbar-login">
                                     <div class="row">
@@ -172,6 +173,6 @@
                 </ul>
             </div><!-- /.navbar-collapse -->
 
-            @endif
+        @endif
     </div><!-- /.container-fluid -->
 </nav>

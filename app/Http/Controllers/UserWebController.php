@@ -28,7 +28,7 @@ class UserWebController extends Controller
             return redirect('/home');
         }
         else {
-            return view("pages.welcome")->with("false", true);
+            return view("pages.welcome");
         }
     }
 
@@ -37,11 +37,9 @@ class UserWebController extends Controller
         $password = $request->input("password");
         $user = User::where('email','=',$email)->first();
         if($user == null || !$user->password == $password){
-            return view("pages.welcome")->with("false",false);
+            Session::flash("fail","Wrong Email or Password");
+            return view("pages.welcome");
         }
-//        if(!$user->password == $password){
-//            return view('pages.home')->with("false","false");
-//        }
 
         Session::put('user',$user);
 
@@ -58,14 +56,27 @@ class UserWebController extends Controller
         $name = $request->input("name");
         $email = $request->input("email");
         $password = $request->input("password");
+        $confirmPassword = $request->input("confirmPassword");
         $gender = $request->input("gender");
         $age = $request->input("age");
+
+//        $result = filter_var( $email , FILTER_VALIDATE_EMAIL );
+//
+//        if(!$result){
+//            Session::flash("error","This email does not exist!");
+//            echo "hi";
+//            return redirect()->back();
+//        }
 
         if(User::where("email",'=',$email)->first() === null){
             $user = new User(["name"=>$name,"email"=>$email,"password"=>$password,"gender"=>$gender,"age"=>$age]);
             $user->save();
+            Session::put('user',$user);
+        }else{
+            Session::flash('error','This email already exist');
+            return view('pages.welcome');
         }
-        Session::put('user',$user);
+
         return redirect('/celebrities/all');
     }
 
@@ -75,7 +86,9 @@ class UserWebController extends Controller
         $password = $request->input("password");
         $gender = $request->input("gender");
         $age = $request->input("age");
+
         $is_admin = true;
+
         if(User::where("email",'=',$email)->first() === null){
             $user = new User(["name"=>$name,"email"=>$email,"password"=>$password,"gender"=>$gender,"age"=>$age,'is_admin'=>$is_admin]);
             $user->save();
@@ -352,6 +365,24 @@ class UserWebController extends Controller
             return redirect()->back();
     }
 
+    public function getFacebookProfilePicture($id){
+        $url = "https://graph.facebook.com/v2.8/$id/picture?debug=all&format=json&method=get&pretty=0&redirect=false&suppress_http_code=1";
+
+        try {
+            $result = file_get_contents($url);
+            $decoded = json_decode($result, false);
+        }catch (ErrorException $e){
+            echo 'exe'. $e;
+            return null;
+        }
+        $res = null;
+        /*if(array_key_exists('data',$decoded)){
+            $res = $decoded["data"]["url"];
+        }*/
+        $res = $decoded->data->url;
+        return $res;
+    }
+
     public function addCeleb(Request $request){
         $name = $request->input("name");
         $fb_id = $request->input("fb_id");
@@ -429,6 +460,7 @@ class UserWebController extends Controller
         $celebsFollowed = $user->celebrity;
         $search = $request->input("search");
         $celebs = Celebrity::where('name','=',$search)->get();
+        //$celebs = Celebrity::where('name','=~','.*$search.*')->get();
         //todo ask kinane like instead of equals
         foreach($celebs as $celeb){
             if($celebsFollowed->contains($celeb)) $isFollowed = true;

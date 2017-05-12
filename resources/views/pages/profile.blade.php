@@ -45,15 +45,15 @@
 
                     @if(str_contains(Session::get('user')->gender, 'male'))
 
-                        {{Form::radio('gender',null,array('class' => 'form-control','value' => 'male','checked' => 'checked'))}}Male
-                        {{Form::radio('gender',null,array('class' => 'form-control','value' => 'female'))}}Female
+                        {{Form::radio('gender',"male",'checked',array('class' => '','checked' => 'checked',"style" => "display:initial;"))}}Male
+                        {{Form::radio('gender',"female",null,array('class' => '',"style" => "display:initial;"))}}Female
 
 
 
                     @else
 
-                        {{Form::radio('gender',null,array('class' => 'form-control','value' => 'male'))}}Male
-                        {{Form::radio('gender',null,array('class' => 'form-control','value' => 'female','checked' => 'checked'))}}Female
+                        {{Form::radio('gender',"male",null,array('class' => '',"style" => "display:initial;"))}}Male
+                        {{Form::radio('gender',"female",'checked',array('class' => '',"style" => "display:initial;"))}}Female
 
 
 

@@ -4,11 +4,11 @@
     @include('partials._head')
 
 </head>
-<body id="body">
+<body id="body" class="primary">
 
 @include('partials._nav')
 
-<div class="container">
+<div class="container" >
 
     @yield('content')
 

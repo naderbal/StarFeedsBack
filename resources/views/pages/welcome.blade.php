@@ -4,21 +4,21 @@
 
     <div class="row">
         <div class="col-md-4">
-            <div class="jumbotron">
+            <div class="secondary jumbotron" style="border:1px solid #ccc;">
                 <h3>Sign In</h3>
                 <hr>
                 {!! Form::open(array('url' => '/login')) !!}
 
                 <div class="form-group">
                     {{Form::label('email', 'Email:' )}}
-                    {{Form::email('email', null,array('class' => 'form-control','placeholder' => 'Email Address','required' => 'required'))}}
+                    {{Form::email('email', null,array('class' => 'form-control','id' => 'logIn','placeholder' => 'Email Address','required' => 'required'))}}
                 </div>
                 <div class="pass form-group">
                     {{Form::label('password', 'Password:' )}}
-                    {{Form::password('password',array('class' => 'form-control','placeholder' => 'Password','required' => 'required'))}}
-                    @if(!$false)
+                    {{Form::password('password',array('class' => 'form-control','id' => 'logIn','placeholder' => 'Password','required' => 'required'))}}
+                    @if(Session::has('fail'))
 
-                        <small class="form-text text-muted">*Wrong Email or Password</small>
+                        <small class="form-text text-muted">*{{Session::get("fail")}}</small>
 
                     @endif
                 </div>
@@ -41,10 +41,10 @@
             </div>
         </div>
         <div class="col-md-4 col-md-offset-2">
-            <div class="jumbotron">
+            <div class="jumbotron secondary" style="border:1px solid #ccc;">
                 <h3>Register</h3>
                 <hr>
-                {!! Form::open(array('url' => '/register','id'=>'form')) !!}
+                {!! Form::open(array('url' => '/register')) !!}
 
                 <div class="form-group">
                     {{Form::label('fullname', 'Full Name:' )}}
@@ -53,7 +53,13 @@
 
                 <div class="form-group">
                     {{Form::label('email', 'Email:' )}}
-                    {{Form::email('email', null,array('class' => 'form-control','placeholder' => 'Email Address','required' => 'required'))}}
+                    {{Form::email('email', null,array('class' => 'form-control','placeholder' => 'Email Address','required' => 'required','id' => 'email'))}}
+                    @if(Session::has('error'))
+                        <small style="color:red;">*{{ Session::get('error') }}</small>
+                        <script>
+                            document.getElementById('email').style.borderColor='red';
+                        </script>
+                    @endif
                 </div>
 
                 <div class="pass form-group">
@@ -68,8 +74,8 @@
 
                 <div class="gender form-group">
                     {{Form::label('gender', 'Gender:' )}}
-                    {{Form::radio('gender',null,array('class' => 'form-control','value' => 'male'))}}Male
-                    {{Form::radio('gender',null,array('class' => 'form-control','value' => 'female'))}}Female
+                    {{Form::radio('gender','male',"checked",array('class' => 'radio',"required" => "required","style" => "display:initial;"))}}Male
+                    {{Form::radio('gender','female',null,array('class' => '',"required" => "required","style" => "display:initial;"))}}Female
                 </div>
 
                 <div class="form-group">
