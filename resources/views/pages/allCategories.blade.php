@@ -12,8 +12,8 @@
         -ms-transition: all 0.25s ease-in-out;
         -o-transition: all 0.25s ease-in-out;
         transition: all 0.25s ease-in-out;
-        border:1px solid #aaa;
-        color:#fff;
+        border:1px solid #777;
+        color:#e7e7e7;
         background-color: #aaa;
         max-width:200px;
     }
@@ -26,11 +26,7 @@
         -ms-transition: all 0.25s ease-in-out;
         -o-transition: all 0.25s ease-in-out;
         transition: all 0.25s ease-in-out;
-        color:#aaa;
-    }
-
-    h3::first-letter{
-        text-transform: capitalize;
+        color:#c7c7c7!important;
     }
 
 </style>

@@ -36,3 +36,17 @@
     visibility: visible;
 
 }
+
+.primary{
+    background-color:#e7e7e7!important;
+}
+
+.secondary{
+    background-color:white!important;
+}
+
+h1,h2,h3,h4::first-letter{
+
+    text-transform: capitalize;
+
+}
