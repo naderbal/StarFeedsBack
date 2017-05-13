@@ -15,6 +15,11 @@ class User extends NeoEloquent
         return $this->hasMany(Celebrity::class,"FOLLOWS");
     }
 
+    public function dislikedCelebrity()
+    {
+        return $this->hasMany(Celebrity::class,"DISLIKES");
+    }
+
     public function likes(){
         return $this->hasMany(Like::class,"LIKES");
     }

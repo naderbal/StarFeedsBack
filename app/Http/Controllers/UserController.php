@@ -8,6 +8,7 @@ use App\InstagramFeed;
 use App\Like;
 use App\User;
 use App\Http\Requests;
+use Exception;
 use Illuminate\Http\Request;
 use App\FacebookFeed;
 use App\TwitterFeed;
@@ -133,7 +134,13 @@ class UserController extends Controller
     }
 
     public function getUserFollowing($id){
-         return User::find($id)->celebrity;
+        $celebs = User::find($id)->celebrity;
+        $returnCelebs = [];
+        foreach($celebs as $celeb) {
+            $cel = ["is_followed"=>true,"celeb" => $celeb];
+            array_push($returnCelebs, $cel);
+        }
+        return ["data" => $returnCelebs];
     }
 
 
@@ -200,8 +207,6 @@ class UserController extends Controller
     {
         return strcmp($post2->timestamp, $post1->timestamp);
     }
-
-
 
         public function followCeleb(Request $request){
             $userId = $request->input("user_id");
@@ -290,9 +295,32 @@ class UserController extends Controller
         return ["is_successful"=>$isSuccessful];
     }
 
+    public function dislikeCelebrity(Request $request){
+        $userId = $request->input("userId");
+        $celebId = $request->input("celebId");
+        $isSuccessful = false;
+
+        $user = User::find($userId);
+        $celeb = Celebrity::find($celebId);
+
+        if ($user == null || $celeb == null) {
+            $isSuccessful = false;
+
+        } else {
+            $user->dislikedCelebrity()->save($celeb);
+            $isSuccessful = true;
+        }
+
+        return [
+            'is_successful'=> $isSuccessful
+        ];
+
+        }
+
     public function getSuggestions($userId){
         $user = User::find($userId);
         $likes = $user->likes()->orderBy("score","desc")->get();
+        $dislikedCelebs = $user->dislikedCelebrity()->get();
         $suggestionCelebs = [];
         foreach($likes as $like){
             $category = $like->category;
@@ -303,6 +331,7 @@ class UserController extends Controller
                 if($celeb->category->contains($category)){
                     // check if user already follows celeb
                     if(!$user->celebrity->contains($celeb)) {
+                        if(!$dislikedCelebs->contains($celeb))
                         array_push($suggestionCelebs, ["celeb"=>$celeb]);
                     }
                 }

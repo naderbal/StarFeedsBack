@@ -19,6 +19,7 @@ Route::post('/save-user','UserController@save');
 Route::post('/save-admin','UserController@saveAdmin');
 Route::post('/follow','UserController@followCeleb');
 Route::post('/un-follow','UserController@unFollowCeleb');
+Route::post('api/dislike','UserController@dislikeCelebrity');
 
 Route::get('/api/test','apiController@testTwitter');
 Route::get('/api/testFacebook','apiController@testFacebook');
@@ -36,7 +37,7 @@ Route::get('/user-suggestions/{id}','UserController@getSuggestions');
 Route::get('/explore/{id}','UserController@getExploreFeeds');
 
 //celebrities
-Route::post('/add-celeb','CelebrityController@addCeleb');
+Route::post('/api/add-celeb','CelebrityController@addCeleb');
 Route::get('/celeb/{celebId}/{userId}','CelebrityController@getCeleb');
 Route::get('/search-celebs-name/{celebName}/{userId}','CelebrityController@getCelebsByName');
 Route::get('/get-celebs-category/{categId}','CelebrityController@getCelebsByCategory');
