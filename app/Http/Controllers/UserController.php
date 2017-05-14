@@ -89,7 +89,7 @@ class UserController extends Controller
 
         $isSuccessful = false;
 
-        if(User::where("email",'=',$email)->first() === null){
+        if($email!= null && User::where("email",'=',$email)->first() === null){
             $user = new User(["name"=>$name,"email"=>$email,"password"=>$password,"gender"=>$gender,"age"=>$age,'is_admin'=>$isAdmin]);
             $user->save();
             $isSuccessful = true;
@@ -199,6 +199,43 @@ class UserController extends Controller
         return ["data" => $newFeeds];
     }
 
+    public function updateUser(Request $request){
+        $id = $request->input('id');
+        $name = $request->input('name');
+        $email = $request->input('email');
+        $user = User::find($id);
+        $is_successful = true;
+
+        if ($user == null){
+            $is_successful = false;
+        } else {
+            if($name != null){
+                $user->name = $name;
+            }
+            if($email != null){
+                if(User::where("email",'=',$email)->first() === null) {
+                    $user->email = $email;
+                }
+                else{
+                    $is_successful = false;
+                }
+            }
+            if($is_successful)
+            {
+                $user->save();
+                $is_successful = true;
+            } else {
+                $is_successful = false;
+            }
+        }
+        return [
+            'data' =>
+                    [
+                        'is_successful' => $is_successful,
+                        'user' => $user
+                    ]
+        ];
+    }
 
     /**
      * Comparator function, which compares the timestamps of two passed Posts

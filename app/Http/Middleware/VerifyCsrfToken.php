@@ -16,6 +16,7 @@ class VerifyCsrfToken extends BaseVerifier
         'api/add-celeb',
         'api/dislike',
         '/save-user',
+        '/api/update-user',
         '/save-admin',
         '/add-admin',
         'follow',

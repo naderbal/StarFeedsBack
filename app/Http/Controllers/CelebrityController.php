@@ -10,6 +10,7 @@ use App\Post;
 use App\TwitterFeed;
 use App\User;
 use ErrorException;
+use Exception;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -20,20 +21,27 @@ class CelebrityController extends Controller
     public $TWITTER_TAG = "Twitter";
     public $INSTAGRAM_TAG = "Instagram";
 
-    public function getCelebsByName($celebName, $userId)
+    public function getCelebsByName($name, $userId)
     {
-        $celebsSearched = [];
-        $isFollowed = false;
-        $celebsFollowed = User::find($userId)->celebrity;
-        $celebs = Celebrity::where('name','=',$celebName)->get();
-        //todo ask kinane like instead of equals
-        foreach($celebs as $celeb){
-            if($celebsFollowed->contains($celeb)) $isFollowed = true;
-            else $isFollowed = false;
-            $cel = ["is_followed" => $isFollowed,"celeb" => $celeb];
-            array_push($celebsSearched,$cel);
+        try {
+            $name = strtolower($name);
+            $celebsSearched = [];
+            $isFollowed = false;
+            $celebsFollowed = User::find($userId)->celebrity;
+            $celebs = Celebrity::all();
+            foreach($celebs as $celeb){
+                $celebName = strtolower($celeb->name);
+                if(strpos($celebName, $name) > -1) {
+                    if ($celebsFollowed->contains($celeb)) $isFollowed = true;
+                    else $isFollowed = false;
+                    $cel = ["is_followed" => $isFollowed, "celeb" => $celeb];
+                    array_push($celebsSearched, $cel);
+                }
+            }
+            return ["data"=>$celebsSearched];
+        } catch (Exception $e){
+            return ["data"=> null];
         }
-        return ["data"=>$celebsSearched];
     }
 
     public function getCelebsByCategory($categoryId)

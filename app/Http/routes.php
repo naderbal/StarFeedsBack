@@ -20,6 +20,7 @@ Route::post('/save-admin','UserController@saveAdmin');
 Route::post('/follow','UserController@followCeleb');
 Route::post('/un-follow','UserController@unFollowCeleb');
 Route::post('api/dislike','UserController@dislikeCelebrity');
+Route::post('api/update-user','UserController@updateUser');
 
 Route::get('/api/test','apiController@testTwitter');
 Route::get('/api/testFacebook','apiController@testFacebook');
