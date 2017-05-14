@@ -29,7 +29,8 @@ class UserController extends Controller
         if($user == null){
             return "false";
         }
-        if(!$user->password == $password){
+        $followersCount = count($user->celebrity()->get());
+        if($user->password != $password){
             return "false";
         }
         return [
@@ -40,6 +41,7 @@ class UserController extends Controller
                         "id"=>$user->id,
                         "name"=>$user->name,
                         "email"=>$user->email,
+                        "followers_count"=>$followersCount
                     ]
                 ]
         ];
@@ -50,9 +52,11 @@ class UserController extends Controller
         $name = $request->input("name");
         $email = $request->input("email");
         $user = User::where('fb_id','=',$id)->first();
+        $followersCount = 0;
         if($user == null){
             $newUser = $this->saveFacebookUser($id, $name, $email);
             if($newUser != null){
+                $followersCount = count($user->celebrity()->get());
                 return [
                     'data' =>
                         [
@@ -61,6 +65,7 @@ class UserController extends Controller
                                     "id"=>$newUser->id,
                                     "name"=>$newUser->name,
                                     "email"=>$newUser->email,
+                                    "followers_count"=>$followersCount
                                 ]
                         ]
                 ];
@@ -74,6 +79,45 @@ class UserController extends Controller
                             "id"=>$user->id,
                             "name"=>$user->name,
                             "email"=>$user->email,
+                            "followers_count"=>$followersCount
+                        ]
+                ]
+        ];
+    }
+
+    public function loginGoogle(Request $request){
+        $id = $request->input("id");
+        $name = $request->input("name");
+        $email = $request->input("email");
+        $user = User::where('google_id','=',$id)->first();
+        $followersCount = 0;
+        if($user == null){
+            $newUser = $this->saveGoogleUser($id, $name, $email);
+            if($newUser != null){
+                $followersCount = count($user->celebrity()->get());
+                return [
+                    'data' =>
+                        [
+                            "user" =>
+                                [
+                                    "id"=>$newUser->id,
+                                    "name"=>$newUser->name,
+                                    "email"=>$newUser->email,
+                                    "followers_count"=>$followersCount
+                                ]
+                        ]
+                ];
+            }
+        }
+        return [
+            'data' =>
+                [
+                    "user" =>
+                        [
+                            "id"=>$user->id,
+                            "name"=>$user->name,
+                            "email"=>$user->email,
+                            "followers_count"=>$followersCount
                         ]
                 ]
         ];
@@ -128,6 +172,15 @@ class UserController extends Controller
         $user = null;
         if(User::where("fb_id",'=',$fbId)->first() === null){
             $user = new User(["name"=>$name,"email"=>$email,"fb_id"=>$fbId]);
+            $user->save();
+        }
+        return $user;
+    }
+
+    public function saveGoogleUser($googleId, $name, $email){
+        $user = null;
+        if(User::where("google_id",'=',$googleId)->first() === null){
+            $user = new User(["name"=>$name,"email"=>$email,"google_id"=>$googleId]);
             $user->save();
         }
         return $user;
@@ -374,7 +427,39 @@ class UserController extends Controller
                 }
             }
         }
+        if (count($suggestionCelebs) == 0){
+            $suggestionCelebs = $this->getSuggestionsForNewUsers($userId);
+        }
         return $suggestionCelebs;
+    }
+
+
+    private function getSuggestionsForNewUsers($userId){
+        $user = User::find($userId);
+        $dislikedCelebs = $user->dislikedCelebrity()->get();
+        $suggestionCelebs = [];
+        $allCelebs = Celebrity::all();
+        //$allCelebs = $allCelebs->toArray();
+        $celebsArray = [];
+        foreach($allCelebs as $celeb){
+            array_push($celebsArray,$celeb);
+        }
+        usort($celebsArray, array($this,'cmpCelebs'));
+        //$allCelebs = array_reverse($allCelebs);
+        foreach($allCelebs as $celeb) {
+            if (!$dislikedCelebs->contains($celeb) && !$user->celebrity->contains($celeb))
+                array_push($suggestionCelebs, ["celeb" => $celeb]);
+        }
+        return $suggestionCelebs;
+    }
+
+
+    public static function cmpCelebs($celeb1, $celeb2)
+    {
+        if ($celeb1['followers'] == $celeb2['followers']) {
+            return 0;
+        }
+        return ($celeb1['followers'] < $celeb2['followers']) ? -1 : 1;
     }
 
     public function getExploreFeeds($id){

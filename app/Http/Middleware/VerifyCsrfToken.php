@@ -23,6 +23,7 @@ class VerifyCsrfToken extends BaseVerifier
         'un-follow',
         'api/login-email',
         'api/login-facebook',
+        'api/login-google',
         '/userSuggestions'
     ];
 }

@@ -30,6 +30,7 @@ Route::get('/user-following/{id}','UserController@getUserFollowing');
 Route::get('/api/save','apiController@saveFeedsToDatabase');
 Route::post('/api/login-email','UserController@loginEmail');
 Route::post('/api/login-facebook','UserController@loginFacebook');
+Route::post('/api/login-google','UserController@loginGoogle');
 
 Route::get('/testInstagram','apiController@testInstagram');
 
