@@ -44,7 +44,7 @@
     function img(id , cap){
         modal.style.display = "block";
         modalImg.src = id.src;
-        captionText.innerHTML = cap;
+        captionText.innerHTML = decodeURIComponent(cap);
         document.getElementById("body").style.overflow="hidden";
     }
 

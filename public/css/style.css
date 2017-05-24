@@ -50,3 +50,14 @@ h1,h2,h3,h4::first-letter{
     text-transform: capitalize;
 
 }
+
+#styled_video_container.style_it  {
+    background: linear-gradient(to bottom, #ff670f 0%,#e20d0d 100%);
+}
+#styled_video_container.style_it video {
+    border: 10px solid green !important;
+    opacity: 0.6;
+    transition: all 8s ease-in-out;
+    transform: rotate(300deg);
+    box-shadow:         12px 9px 13px rgba(255, 0, 255, 0.75);
+}

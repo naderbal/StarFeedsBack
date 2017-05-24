@@ -53,17 +53,15 @@ Route::group(['middleware' => ['web']],function(){
     Route::get('/','UserWebController@getWelcomePage');
     Route::post('/register','UserWebController@save');
     Route::post('/login','UserWebController@loginEmail');
+    Route::post('/update-user','UserWebController@updateUser');
     Route::get('/home','UserWebController@getUserFeeds');
     Route::get('/logout','UserWebController@logOut');
-    Route::post('/add-celeb','UserWebController@addCeleb');
-    Route::post('/add-admin','UserWebController@saveAdmin');
-    Route::post('/search','UserWebController@getCelebsByName');
+    Route::post('/search','UserWebController@Search');
     Route::get('/celebrities/all','UserWebController@getCelebrities');
     Route::get('/followedCelebs', 'UserWebController@getFollowedCelebs');
     Route::get('/celebrities/categories','UserWebController@getCategories');
     Route::get('/timeline/{celebName}','UserWebController@getCelebFeeds');
     Route::get('/edit-account','UserWebController@getUser');
-    Route::get('/admin/add-celebrity','UserWebController@getAdminAddCeleb');
     Route::get('/explore','UserWebController@getExploreFeeds');
     Route::get('/follow/{celebid}','UserWebController@followCeleb');
     Route::get('/unfollow/{celebid}','UserWebController@unFollowCeleb');
@@ -72,7 +70,15 @@ Route::group(['middleware' => ['web']],function(){
 //    Route::get('/about','UserWebController@getAbout');
     Route::get('/contact','UserWebController@getContact');
     Route::get('/following','UserWebController@getFollowedCelebs');
+    Route::get('/reject-celeb/{celebId}','UserWebController@dislikeCelebrity');
+
+
     Route::get('/admin/add-admin','UserWebController@getAddAdmin');
+    Route::post('/add-admin','UserWebController@saveAdmin');
+    Route::post('/add-celeb','UserWebController@addCeleb');
+    Route::get('/admin/add-celebrity','UserWebController@getAdminAddCeleb');
+    Route::get('/admin/edit-celebrity','UserWebController@getAdminEditCeleb');
+    Route::post('/adminGetCeleb','UserWebController@adminGetCeleb');
 
 });
 

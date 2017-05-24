@@ -12,9 +12,9 @@
             @foreach($result as $result)
 
                 <div class="col-lg-2 col-md-2 col-sm-3 col-xs-4 col-lg-pull-1 col-md-pull-1 col-md-offset-1 col-sm-offset-1 col-sm-pull-2 col-xs-pull-2 col-xs-offset-2" style="margin-bottom: 5px;">
-                    <div class="card" style="width: 150%; background-color: #eee; overflow: hidden;">
+                    <div class="card secondary" style="width: 150%;border: 1px solid #ccc;border-radius: 5px;overflow: hidden;">
                         <div style="margin:5px;">
-                            <img class="card-img-top img-circle center-block img-responsive" style="width:150px;  max-height:150px;" src="{{ $result['celeb']->fb_profile_url }}" alt="Card image cap">
+                            <img class="card-img-top img-circle center-block img-responsive" style="width:80px;  max-height:150px;" src="{{ $result['celeb']->fb_profile_url }}" alt="Card image cap">
                             <div class="card-block">
                                 <h4 class="card-title text-center"><a href="/timeline/{{ $result['celeb']->id }}">{{ $result['celeb']->name }}</a></h4>
                                 @if(!$result['is_followed'])

@@ -6,79 +6,80 @@
         <h1>Edit Celebrity</h1>
         <hr>
         <div class="row">
-            <!-- left column -->
-            <div class="col-md-3">
-                <div class="text-center">
-                    <img src="{{ $celeb['usrimage'] }}" class="avatar img-circle" alt="avatar">
-                </div>
-            </div>
-
             <!-- edit form column -->
             <div class="col-md-9 personal-info">
 
 
-                {!! Form::open(array('url' => 'foo/bar', 'class' => 'form-horizontal')) !!}
+                {!! Form::open(array('url' => '/adminGetCeleb', 'class' => 'form-horizontal')) !!}
 
                 <div class="form-group">
                     {{Form::label('searchCeleb', 'Search Celebrity: ', array('class'=>'col-lg-3'))}}
                     <div class="col-lg-8">
-                        {{Form::text('searchCeleb', null,array('class' => 'form-control','placeholder' => "Search"))}}
+                        {{Form::text('search', null,array('class' => 'form-control','placeholder' => "Search"))}}
+                        @if(Session::has('error'))
+                            <small style="color:red;">*{{ Session::get('error') }}</small>
+                            <script>
+                                document.getElementById('email').style.borderColor='red';
+                            </script>
+                        @endif
                     </div>
+
                 </div>
 
                 {!! Form::close() !!}
                 <hr>
+
+                @if(Session::has('celebrity'))
                 <h3>Celebrity info</h3>
 
 
 
-                {!! Form::open(array('url' => 'foo/bar','class'=>'form-horizontal')) !!}
+                    {!! Form::open(array('url' => '/update-celeb','class'=>'form-horizontal')) !!}
 
-                    <div class="form-group">
-                        {{Form::label('celebname', 'Name:',array('class' => 'col-lg-3'))}}
-                        <div class="col-lg-8">
-                            {{Form::text('celebname', 'jane',array('class' => 'form-control','placeholder' => "Name"))}}
+                        <div class="form-group">
+                            {{Form::label('celebname', 'Name:',array('class' => 'col-lg-3'))}}
+                            <div class="col-lg-8">
+                                {{Form::text('celebname', Session::get('celebrity')->name,array('class' => 'form-control','placeholder' => "Name"))}}
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="form-group">
-                        {{Form::label('twitterlink', 'Twitter Link:',array('class' => 'col-lg-3'))}}
-                        <div class="col-lg-8">
-                            {{Form::text('twitterlink', 'Twitter Link',array('class' => 'form-control','placeholder' => 'Twitter link','value' => $celeb['twitterlink'] ))}}
+                        <div class="form-group">
+                            {{Form::label('twitterlink', 'Twitter Link:',array('class' => 'col-lg-3'))}}
+                            <div class="col-lg-8">
+                                {{Form::text('twitterlink', Session::get('celebrity')->twt_id,array('class' => 'form-control','placeholder' => 'Twitter link'))}}
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="form-group">
-                        {{Form::label('facebooklink', 'Facebook Link: ',array('class' => 'col-lg-3'))}}
-                        <div class="col-lg-8">
-                            {{Form::text('facebooklink', 'Facebook Link',array('class' => 'form-control','placeholder' => 'Facebook link','value' => $celeb['facebooklink'] ))}}
+                        <div class="form-group">
+                            {{Form::label('facebooklink', 'Facebook Link: ',array('class' => 'col-lg-3'))}}
+                            <div class="col-lg-8">
+                                {{Form::text('facebooklink',Session::get('celebrity')->fb_id ,array('class' => 'form-control','placeholder' => 'Facebook link'))}}
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="form-group">
-                        {{Form::label('instagramlink', 'Instagram Link:',array('class' => 'col-lg-3'))}}
-                        <div class="col-lg-8">
-                            {{Form::text('instagramlink', 'Instagram Link',array('class' => 'form-control','placeholder' => 'Instagram link','value' => $celeb['instagramlink'] ))}}
+                        <div class="form-group">
+                            {{Form::label('instagramlink', 'Instagram Link:',array('class' => 'col-lg-3'))}}
+                            <div class="col-lg-8">
+                                {{Form::text('instagramlink',Session::get('celebrity')->instagram_id ,array('class' => 'form-control','placeholder' => 'Instagram link' ))}}
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="form-group">
-                        {{Form::label('category', 'Category:',array('class' => 'col-lg-3'))}}
-                        <div class="col-lg-8">
-                            {{Form::text('category', 'Category',array('class' => 'form-control','placeholder' => 'Category','value' => $celeb['category'] ))}}
+                        <div class="form-group">
+                            {{Form::label('category', 'Category:',array('class' => 'col-lg-3'))}}
+                            <div class="col-lg-8">
+                                {{Form::text('category', Session::get('celebrity')->category[0]->category,array('class' => 'form-control','placeholder' => 'Category' ))}}
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="form-group">
-                        {{Form::label('','',array('class' => 'col-lg-3'))}}
-                        <div class="col-md-8">
-                            {{Form::submit('Save Changes',array('class' => 'btn btn-primary'))}}
-                            <span></span>
-                            {{Form::submit('Reset Changes',array('class' => 'btn btn-default'))}}
+                        <div class="form-group">
+                            {{Form::label('','',array('class' => 'col-lg-3'))}}
+                            <div class="col-md-8">
+                                {{Form::submit('Save Changes',array('class' => 'btn btn-primary'))}}
+                            </div>
                         </div>
-                    </div>
 
-                {!! Form::close() !!}
+                    {!! Form::close() !!}
+                    @endif
 
             </div>
         </div>

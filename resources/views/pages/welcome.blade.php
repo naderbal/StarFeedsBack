@@ -7,7 +7,7 @@
             <div class="secondary jumbotron" style="border:1px solid #ccc;">
                 <h3>Sign In</h3>
                 <hr>
-                {!! Form::open(array('url' => '/login')) !!}
+                {!! Form::open(array('url' => '/login','data-parsley-validate'=>"")) !!}
 
                 <div class="form-group">
                     {{Form::label('email', 'Email:' )}}
@@ -44,7 +44,7 @@
             <div class="jumbotron secondary" style="border:1px solid #ccc;">
                 <h3>Register</h3>
                 <hr>
-                {!! Form::open(array('url' => '/register')) !!}
+                {!! Form::open(array('url' => '/register','data-parsley-validate'=>"")) !!}
 
                 <div class="form-group">
                     {{Form::label('fullname', 'Full Name:' )}}
@@ -64,12 +64,12 @@
 
                 <div class="pass form-group">
                     {{Form::label('password', 'Password:' )}}
-                    {{Form::password('password',array('class' => 'form-control','id'=>'pass1','name' => 'password','placeholder' => 'Password','required' => 'required'))}}
+                    {{Form::password('password',array('class' => 'form-control','id'=>'pass1','data-parsley-minlength'=>"8",'name' => 'password','placeholder' => 'Password','required' => 'required'))}}
                 </div>
 
                 <div class="form-group">
                     {{Form::label('confirmPassword', 'Confirm Password:' )}}
-                    {{Form::password('confirmPassword',array('class' => 'form-control','id'=>'pass1','name' => 'confirmPassword','placeholder' => 'Confirm Password','required' => 'required'))}}
+                    {{Form::password('confirmPassword',array('class' => 'form-control','data-parsley-equalto'=>"#pass1",'name' => 'confirmPassword','placeholder' => 'Confirm Password','required' => 'required'))}}
                 </div>
 
                 <div class="gender form-group">

@@ -6,15 +6,18 @@
         <h4 class="media-heading"><a href="/timeline/{{$usrname}}" style="color:inherit">{{ $usrname }}</a></h4>
         <p style="margin-bottom: 5px"><span class="fa fa-{{ $postapp }} media-object" style="padding-right: 10px; padding-top: 5px; float: left" ></span>{{ $date }}</p>
 
-        <div >
+
             <div class="thumbnail center-block" style="max-width:500px;">
-                <div class="embed-responsive embed-responsive-16by9">
-                    <iframe class="embed-responsive-item" width="640" height="480" src="{{ $postvid }}" frameborder="0" allowfullscreen></iframe>
+                {{--<div class="embed-responsive embed-responsive-16by9">--}}
+                    {{--<iframe class="" src="{{ $postvid }}" frameborder="0" allowfullscreen style="margin:0 auto;"></iframe>--}}
+                {{--</div>--}}
+                <div id="styled_video_container">
+                    <video src="{{ $postvid }}" style="width:100%" controls muted preload="metadata" loop>
                 </div>
                 <div class="caption">
                     <p>{{ $cap }}</p>
                 </div>
             </div>
-        </div>
+
     </div>
 </div>

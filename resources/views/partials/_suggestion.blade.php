@@ -1,5 +1,5 @@
 <div id="media" class="media" style="background-color: #eee;padding:5px; border-radius: 10px;margin-bottom: 10px;display: block;">
-    <span class="close"  onclick="this.parentNode.style.display='none'">&times;</span>
+    <a href="/reject-celeb/{{$celebid}}"><span class="close"  onclick="this.parentNode.style.display='none'">&times;</span></a>
     <div class="media-left">
         <img src="{{ $celebimage }}" class="media-object" style="max-width:45px">
     </div>

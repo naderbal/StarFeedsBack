@@ -9,7 +9,8 @@
         "laravel/framework": "5.2.*",
         "laravelcollective/html":"^5.2.0",
         "vinelab/neoeloquent": "1.3.*",
-        "raiym/instagram-php-scraper": "^0.4.1"
+        "raiym/instagram-php-scraper": "^0.4.1",
+        "guzzlehttp/guzzle": "~4.0"
 
     },
     "require-dev": {

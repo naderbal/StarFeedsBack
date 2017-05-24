@@ -173,7 +173,7 @@
 
                 @include('partials._suggestion',
                 [
-                'celebimage'=> $suggestion->imageProfile,
+                'celebimage'=> $suggestion->fb_profile_url,
                 'celebName' => $suggestion->name,
                 'celebid' => $suggestion->id
                 ]
