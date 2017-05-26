@@ -75,7 +75,7 @@
 </style>
 
 
-<nav class="navbar navbar-default secondary " style="border-bottom:1px solid #ccc">
+<nav class="navbar navbar-default secondary " style="height:50px; border-bottom:1px solid #ccc">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header" >
@@ -85,8 +85,8 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <img class="img-responsive" style="max-width: 45px;float:left;" src="{{ URL::asset("images/logo.png") }}">
-            <a class="navbar-brand" Style="float:right" href="#"><span>StarFeeds</span></a>
+            <a href="#"><img class="img-responsive" style="max-height: 51px;float:left;" src="{{ URL::asset("images/logo.png") }}"></a>
+
         </div>
 
     @if(Session::has('user'))
@@ -95,10 +95,9 @@
                 <ul class="nav navbar-nav">
                     <li class="@yield('homeActive')" ><a href="/home"><strong>Home</strong></a></li>
                     <li class="@yield('exploreActive')"><a href="/explore"><strong>Explore</strong></a></li>
+
+
                     <li class="@yield('celebritiesActive') dropdown">
-
-
-                    <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><strong>Celebrities</strong> <span class="caret"></span></a>
                         <ul class="dropdown-menu" style="background-color: #eee; border: none;">
                             <li><a href="/celebrities/all" ><strong>All</strong></a></li>

@@ -3,7 +3,7 @@
         <img src="{{ URL::asset("$usrimg") }}" class="media-object" style="max-width:45px">
     </div>
     <div class="media-body ">
-        <a href="/timeline/{{$usrname}}" style="color:inherit"><h4 class="media-heading">{{ $usrname }}</h4></a>
+        <a class="celebLink" href="/timeline/{{$usrname}}"><h4 class="media-heading">{{ $usrname }}</h4></a>
         <p style="margin-bottom: 5px;"><span class="fa fa-{{ $postapp }} media-object" style="padding-right: 10px; padding-top: 5px; float: left" >  </span> {{ $date }} </p>
 
         <div >

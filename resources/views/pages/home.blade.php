@@ -167,7 +167,7 @@
         </div>
 
         <div class="col-md-3 col-md-offset-1 col-sm-3 sol-sm-offset-1 hidden-xs secondary" style="border: 1px solid #ddd; border-radius: 10px">
-            <h3><a href="/suggestions" style="color:inherit">Suggestions</a></h3>
+            <h3><a class="celebLink" href="/suggestions">Suggestions</a></h3>
             <hr>
             @foreach($suggestions as $suggestion)
 

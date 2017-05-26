@@ -16,7 +16,7 @@
                         <div style="margin:5px;">
                             <img class="card-img-top img-circle center-block img-responsive" style="width:80px; max-height:150px;" src="{{ $result->fb_profile_url }}" alt="Card image cap">
                             <div class="card-block">
-                                <h4 class="card-title text-center"><a href="/timeline/{{ $result->id }}">{{ $result->name }}</a></h4>
+                                <h4 class="card-title text-center"><a class="celebLink" href="/timeline/{{ $result->id }}">{{ $result->name }}</a></h4>
                                     <a href="/follow/{{$result->id}}" class="btn btn-success center-block" style="width:60%"><span class="spn"></span>Follow</a>
                             </div>
                         </div>

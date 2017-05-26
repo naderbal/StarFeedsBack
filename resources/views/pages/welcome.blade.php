@@ -3,7 +3,7 @@
 @section('content')
 
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-5">
             <div class="secondary jumbotron" style="border:1px solid #ccc;">
                 <h3>Sign In</h3>
                 <hr>
@@ -17,9 +17,7 @@
                     {{Form::label('password', 'Password:' )}}
                     {{Form::password('password',array('class' => 'form-control','id' => 'logIn','placeholder' => 'Password','required' => 'required'))}}
                     @if(Session::has('fail'))
-
                         <small class="form-text text-muted">*{{Session::get("fail")}}</small>
-
                     @endif
                 </div>
 
@@ -40,7 +38,7 @@
                 </a>
             </div>
         </div>
-        <div class="col-md-4 col-md-offset-2">
+        <div class="col-md-5 col-md-offset-2">
             <div class="jumbotron secondary" style="border:1px solid #ccc;">
                 <h3>Register</h3>
                 <hr>
@@ -53,7 +51,7 @@
 
                 <div class="form-group">
                     {{Form::label('email', 'Email:' )}}
-                    {{Form::email('email', null,array('class' => 'form-control','placeholder' => 'Email Address','required' => 'required','id' => 'email'))}}
+                    {{Form::email('r-email', null,array('class' => 'form-control','placeholder' => 'Email Address','required' => 'required','id' => 'email'))}}
                     @if(Session::has('error'))
                         <small style="color:red;">*{{ Session::get('error') }}</small>
                         <script>

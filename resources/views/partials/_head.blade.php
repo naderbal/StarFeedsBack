@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css" crossorigin="anonymous"/>
 <link rel="stylesheet" href="{{ URL::asset('css/style.css') }}" crossorigin="anonymous">
 <link rel="stylesheet" href="{{ URL::asset('css/bootstrap.min.css') }}" crossorigin="anonymous">
-<link rel="shortcut icon" href="{{ URL::asset('images/logo.ico') }}" />
+<link rel="shortcut icon" href="{{ URL::asset('images/logo.png') }}" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-social/5.1.1/bootstrap-social.css" crossorigin="anonymous">
 
 

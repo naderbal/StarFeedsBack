@@ -56,7 +56,7 @@ class UserWebController extends Controller
 
     public function save(Request $request){
         $name = $request->input("name");
-        $email = $request->input("email");
+        $email = $request->input("r-email");
         $password = $request->input("password");
         $gender = $request->input("gender");
         $age = $request->input("age");
@@ -82,33 +82,26 @@ class UserWebController extends Controller
     }
 
     public function updateUser(Request $request){
-        $id = $request->input('id');
+        $id = Session::get('user')->id;
         $name = $request->input('name');
         $email = $request->input('email');
         $password = $request->input('password');
         $new_password = $request->input('new_password');
+        $age = $request->input('age');
+        $gender = $request->input('gender');
         $user = User::find($id);
         $is_successful = true;
 
         if ($user == null || $user->password != $password){
             $is_successful = false;
-            Session::flash('error','Password incorrect');
+            Session::flash('error','Incorrect Password');
             return view('pages.profile');
         } else {
-            if($name != null){
                 $user->name = $name;
-            }
-            if($password != null){
                 $user->password = $new_password;
-            }
-            if($email != null){
-                if(User::where("email",'=',$email)->first() === null) {
-                    $user->email = $email;
-                }
-                else{
-                    $is_successful = false;
-                }
-            }
+                $user->email = $email;
+                $user->age = $age;
+                $user->gender = $gender;
             if($is_successful)
             {
                 $user->save();
@@ -118,7 +111,7 @@ class UserWebController extends Controller
             }
         }
         Session::put('user',$user);
-        return redirect()->back();
+        return redirect('/edit-account');
     }
 
     public function saveAdmin(Request $request){
@@ -593,6 +586,7 @@ class UserWebController extends Controller
 
     public function adminGetCeleb(Request $request){
         $user=Session::get('user');
+        Session::forget('celebrity');
         $celebSearched = null;
         try {
             $name = strtolower($request->input("search"));

@@ -1,6 +1,6 @@
 @extends('main')
 
-@section('celebritiesActive','active')
+@section('celebritiesActive',' active')
 @section('title',' | Celebrities')
 
 <style>
@@ -78,7 +78,7 @@
                         <div style="margin:5px;">
                             <img class="card-img-top img-circle center-block img-responsive" style="width:80px;  max-height:150px;" src="{{ $result['celeb']->fb_profile_url }}" alt="Card image cap">
                             <div class="card-block">
-                                <h4 class="card-title text-center"><a href="/timeline/{{ $result['celeb']->name }}">{{ $result['celeb']->name }}</a></h4>
+                                <h4 class="card-title text-center"><a class="celebLink" href="/timeline/{{ $result['celeb']->name }}">{{ $result['celeb']->name }}</a></h4>
                                 @if(!$result['is_followed'])
                                     <a href="/follow/{{$result['celeb']->id}}" class="btn btn-success center-block" style="width:60%"><span class="spn"></span>Follow</a>
                                 @else

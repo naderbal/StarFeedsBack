@@ -3,7 +3,7 @@
         <img src="{{ URL::asset("$usrimg") }}" class="media-object" style="max-width:45px">
     </div>
     <div class="media-body ">
-        <h4 class="media-heading"><a href="/timeline/{{$usrname}}" style="color:inherit">{{ $usrname }}</a></h4>
+        <h4 class="media-heading"><a class="celebLink" href="/timeline/{{$usrname}}">{{ $usrname }}</a></h4>
         <p style="margin-bottom: 5px"><span class="fa fa-{{ $postapp }} media-object" style="padding-right: 10px; padding-top: 5px; float: left" ></span>{{ $date }}</p>
 
 
@@ -12,7 +12,7 @@
                     {{--<iframe class="" src="{{ $postvid }}" frameborder="0" allowfullscreen style="margin:0 auto;"></iframe>--}}
                 {{--</div>--}}
                 <div id="styled_video_container">
-                    <video src="{{ $postvid }}" style="width:100%" controls muted preload="metadata" loop>
+                    <video src="{{ $postvid }}" style="width:100%" controls muted preload="metadata">
                 </div>
                 <div class="caption">
                     <p>{{ $cap }}</p>

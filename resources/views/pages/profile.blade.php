@@ -79,7 +79,7 @@
 
                 <div class="form-group">
                     {{Form::label('age', 'Age:')}}
-                    {{Form::number('age', Session::get('user')->age,array('class' => 'form-control','style' => 'width:70px'))}}
+                    {{Form::number('age',Session::get('user')->age,array('class' => 'form-control','required','style' => 'width:70px'))}}
                 </div>
 
                 <div class="form-group">
