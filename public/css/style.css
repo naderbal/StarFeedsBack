@@ -67,3 +67,12 @@ a.celebNav{
 a.celebLink:hover{
     text-decoration: underline!important;
 }
+
+.card{
+    width:150%;
+    min-height: 23%;
+    max-height:25%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+}
