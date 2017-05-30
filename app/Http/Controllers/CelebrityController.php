@@ -123,6 +123,7 @@ class CelebrityController extends Controller
         $twt_id = $request->input("twt_id");
         $instagram_id = $request->input("instagram_id");
         $category = $request->input("category");
+        $country = $request->input("country");
         /*if (count(Celebrity::where(['fb_id','=',$fb_id])->get()) > 0){
             return;
         }*/
@@ -136,7 +137,8 @@ class CelebrityController extends Controller
                 "fb_id" => $fb_id,
                 "fb_profile_url"=>$fbProfilePic,
                 "twt_id" => $twt_id,
-                "instagram_id" => $instagram_id
+                "instagram_id" => $instagram_id,
+                "country" => $country,
             ]
         );
 

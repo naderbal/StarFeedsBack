@@ -33,6 +33,8 @@ class apiController extends Controller
      */
     public function makeFbCall($id)
     {
+        set_time_limit(5000);
+
         $appID = '311242662591971';
         $appSecret = 'de2e7436f9543e1d3c816e5485cea79b';
         //Create an access token using the APP ID and APP Secret.
@@ -56,6 +58,8 @@ class apiController extends Controller
      */
     public function makeTwitterCall($twtId)
     {
+        set_time_limit(5000);
+
         //This is all you need to configure.
         $app_key = 'gTglSLTCCdqbo6QPxuWUNFSUC';
         $app_token = 'UyAPVkzDeknBueoxzIkidVXMc0Qs9XjRLGhZ8mmLcc5HR3ighU';
@@ -100,7 +104,9 @@ class apiController extends Controller
     }
 
     public function makeInstagramCall($handle){
-        $media = Instagram::getMedias($handle, 10);
+        set_time_limit(5000);
+
+        $media = Instagram::getMedias($handle, 5);
 
         return $media;
     }
@@ -108,6 +114,8 @@ class apiController extends Controller
 
     public function saveFeedsToDatabase()
     {
+        set_time_limit(5000);
+
         $celebs = Celebrity::all();
         $FACEBOOK_PREFIX = "facebook_";
         $TWITTER_PREFIX = "twitter_";

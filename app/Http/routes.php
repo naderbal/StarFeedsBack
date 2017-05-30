@@ -46,6 +46,13 @@ Route::get('/get-celebs-category/{categId}','CelebrityController@getCelebsByCate
 Route::get('/get-celebs-country/{country}','CelebrityController@getCelebsByCountry');
 Route::get('/celeb-feeds/{celebId}','CelebrityController@getCelebFeeds');
 
+
+
+Route::post('/post-message','UserController@postMessage');
+Route::post('/delete-message','UserController@deleteMessage');
+Route::get('/get-messages','UserController@getMessages');
+Route::post('/delete-celeb','UserController@deleteCeleb');
+
 //web
 
 Route::group(['middleware' => ['web']],function(){

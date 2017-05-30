@@ -6,6 +6,7 @@ use App\Category;
 use App\Celebrity;
 use App\InstagramFeed;
 use App\Like;
+use App\Message;
 use App\User;
 use App\Http\Requests;
 use Exception;
@@ -128,13 +129,25 @@ class UserController extends Controller
         $email = $request->input("email");
         $password = $request->input("password");
         $gender = $request->input("gender");
+        $country = $request->input("country");
+        if(strlen($country) == 2) {
+            $country = $this->getCountryByCode($country);
+        }
         $age = $request->input("age");
         $isAdmin = false;
 
         $isSuccessful = false;
 
-        if($email!= null && User::where("email",'=',$email)->first() === null){
-            $user = new User(["name"=>$name,"email"=>$email,"password"=>$password,"gender"=>$gender,"age"=>$age,'is_admin'=>$isAdmin]);
+        if($email!= null && User::where("email",'=',$email)->first() === null && $password != null){
+            $user = new User([
+                "name"=>$name,
+                "email"=>$email,
+                "password"=>$password,
+                "gender"=>$gender,
+                "age"=>$age,
+                "country"=>$country,
+                'is_admin'=>$isAdmin
+            ]);
             $user->save();
             $isSuccessful = true;
            return [
@@ -256,6 +269,7 @@ class UserController extends Controller
         $id = $request->input('id');
         $name = $request->input('name');
         $email = $request->input('email');
+        $country = $request->input('country');
         $user = User::find($id);
         $is_successful = true;
 
@@ -264,6 +278,12 @@ class UserController extends Controller
         } else {
             if($name != null){
                 $user->name = $name;
+            }
+            if($country != null){
+                if(strlen($country) == 2) {
+                    $country = $this->getCountryByCode($country);
+                }
+                $user->country = $country;
             }
             if($email != null){
                 if(User::where("email",'=',$email)->first() === null) {
@@ -380,7 +400,6 @@ class UserController extends Controller
                     }
                 }
             }
-
         }
         return ["is_successful"=>$isSuccessful];
     }
@@ -409,12 +428,12 @@ class UserController extends Controller
 
     public function getSuggestions($userId){
         $user = User::find($userId);
+        $country = $user->country;
         $likes = $user->likes()->orderBy("score","desc")->get();
         $dislikedCelebs = $user->dislikedCelebrity()->get();
         $suggestionCelebs = [];
         foreach($likes as $like){
             $category = $like->category;
-            //todo ask kinane is there a way to get children of node (all the celebs where they have this category)
             $celebs = Celebrity::get();
             foreach($celebs as $celeb){
                 // check if celeb belongs to category
@@ -422,20 +441,46 @@ class UserController extends Controller
                     // check if user already follows celeb
                     if(!$user->celebrity->contains($celeb)) {
                         if(!$dislikedCelebs->contains($celeb))
-                        array_push($suggestionCelebs, ["celeb"=>$celeb]);
+                            if($celeb->country == $country) {
+                                $celebScore = ["score"=>20,"celeb"=>$celeb];
+                            } else {
+                                $celebScore = ["score" => 10, "celeb" => $celeb];
+                            }
+                        array_push($suggestionCelebs, $celebScore);
                     }
                 }
             }
         }
-        if (count($suggestionCelebs) == 0){
-            $suggestionCelebs = $this->getSuggestionsForNewUsers($userId);
+        foreach($suggestionCelebs as $celeb){
+            if($celeb['celeb']->country == $country){
+                $celeb['score']+=20;
+            }
         }
-        return $suggestionCelebs;
+
+        usort($suggestionCelebs, array($this,'cmpCelebsScore'));
+
+        $returnCelebs = [];
+        foreach($suggestionCelebs as $celeb){
+            array_push($returnCelebs, ["celeb"=>$celeb['celeb']]);
+        }
+        if (count($suggestionCelebs) == 0){
+            $returnCelebs = $this->getSuggestionsForNewUsers($userId);
+        }
+
+        return $returnCelebs;
     }
 
+    public static function cmpCelebsScore($celeb1, $celeb2)
+    {
+        if ($celeb1['score'] == $celeb2['score']) {
+            return 0;
+        }
+        return ($celeb1['score'] > $celeb2['score']) ? -1 : 1;
+    }
 
     private function getSuggestionsForNewUsers($userId){
         $user = User::find($userId);
+        $country = $user->country;
         $dislikedCelebs = $user->dislikedCelebrity()->get();
         $suggestionCelebs = [];
         $allCelebs = Celebrity::all();
@@ -448,11 +493,19 @@ class UserController extends Controller
         //$allCelebs = array_reverse($allCelebs);
         foreach($allCelebs as $celeb) {
             if (!$dislikedCelebs->contains($celeb) && !$user->celebrity->contains($celeb))
-                array_push($suggestionCelebs, ["celeb" => $celeb]);
+                if($celeb->country == $country) {
+                    $celebScore = ["score"=>20,"celeb"=>$celeb];
+
+                } else {
+                    $celebScore = ["score" => 10, "celeb" => $celeb];
+                }
+                array_push($suggestionCelebs, $celebScore);
         }
+
+        usort($suggestionCelebs, array($this,'cmpCelebsScore'));
+
         return $suggestionCelebs;
     }
-
 
     public static function cmpCelebs($celeb1, $celeb2)
     {
@@ -495,5 +548,311 @@ class UserController extends Controller
             }
         }
         return $explorePosts;
+    }
+
+    public function postMessage(Request $request){
+        $userId = $request->input("user-id");
+        $messageText = $request->input("message");
+        $user = User::find($userId);
+
+        if($user){
+            $message = new Message(["message"=>$messageText]);
+            $user->message()->save($message);
+        }
+    }
+
+    public function getMessages(){
+        return Message::all();
+    }
+
+    public function deleteMessage(Request $request){
+        $messageId = $request->input("message-id");
+
+        $message = Message::find($messageId);
+
+        if($message){
+            $message->delete();
+        }
+    }
+
+    public function deleteCeleb(Request $request){
+        $celebId = $request->input("celeb-id");
+
+        $celeb = Celebrity::find($celebId);
+
+        $facebookFeed = $celeb->facebookFeed;
+        $twitterFeed = $celeb->instagramFeed;
+        $instagramFeed = $celeb->twitterFeed;
+
+        foreach ($facebookFeed as $relation) {
+            $relation->delete();
+        }
+
+        foreach ($twitterFeed as $relation) {
+            $relation->delete();
+        }
+
+        foreach ($instagramFeed as $relation) {
+            $relation->delete();
+        }
+
+        $celeb->delete();
+
+    }
+
+    public function getCountryByCode($code){
+        $countries = array
+        (
+            'AF' => 'Afghanistan',
+            'AX' => 'Aland Islands',
+            'AL' => 'Albania',
+            'DZ' => 'Algeria',
+            'AS' => 'American Samoa',
+            'AD' => 'Andorra',
+            'AO' => 'Angola',
+            'AI' => 'Anguilla',
+            'AQ' => 'Antarctica',
+            'AG' => 'Antigua And Barbuda',
+            'AR' => 'Argentina',
+            'AM' => 'Armenia',
+            'AW' => 'Aruba',
+            'AU' => 'Australia',
+            'AT' => 'Austria',
+            'AZ' => 'Azerbaijan',
+            'BS' => 'Bahamas',
+            'BH' => 'Bahrain',
+            'BD' => 'Bangladesh',
+            'BB' => 'Barbados',
+            'BY' => 'Belarus',
+            'BE' => 'Belgium',
+            'BZ' => 'Belize',
+            'BJ' => 'Benin',
+            'BM' => 'Bermuda',
+            'BT' => 'Bhutan',
+            'BO' => 'Bolivia',
+            'BA' => 'Bosnia And Herzegovina',
+            'BW' => 'Botswana',
+            'BV' => 'Bouvet Island',
+            'BR' => 'Brazil',
+            'IO' => 'British Indian Ocean Territory',
+            'BN' => 'Brunei Darussalam',
+            'BG' => 'Bulgaria',
+            'BF' => 'Burkina Faso',
+            'BI' => 'Burundi',
+            'KH' => 'Cambodia',
+            'CM' => 'Cameroon',
+            'CA' => 'Canada',
+            'CV' => 'Cape Verde',
+            'KY' => 'Cayman Islands',
+            'CF' => 'Central African Republic',
+            'TD' => 'Chad',
+            'CL' => 'Chile',
+            'CN' => 'China',
+            'CX' => 'Christmas Island',
+            'CC' => 'Cocos (Keeling) Islands',
+            'CO' => 'Colombia',
+            'KM' => 'Comoros',
+            'CG' => 'Congo',
+            'CD' => 'Congo, Democratic Republic',
+            'CK' => 'Cook Islands',
+            'CR' => 'Costa Rica',
+            'CI' => 'Cote D\'Ivoire',
+            'HR' => 'Croatia',
+            'CU' => 'Cuba',
+            'CY' => 'Cyprus',
+            'CZ' => 'Czech Republic',
+            'DK' => 'Denmark',
+            'DJ' => 'Djibouti',
+            'DM' => 'Dominica',
+            'DO' => 'Dominican Republic',
+            'EC' => 'Ecuador',
+            'EG' => 'Egypt',
+            'SV' => 'El Salvador',
+            'GQ' => 'Equatorial Guinea',
+            'ER' => 'Eritrea',
+            'EE' => 'Estonia',
+            'ET' => 'Ethiopia',
+            'FK' => 'Falkland Islands (Malvinas)',
+            'FO' => 'Faroe Islands',
+            'FJ' => 'Fiji',
+            'FI' => 'Finland',
+            'FR' => 'France',
+            'GF' => 'French Guiana',
+            'PF' => 'French Polynesia',
+            'TF' => 'French Southern Territories',
+            'GA' => 'Gabon',
+            'GM' => 'Gambia',
+            'GE' => 'Georgia',
+            'DE' => 'Germany',
+            'GH' => 'Ghana',
+            'GI' => 'Gibraltar',
+            'GR' => 'Greece',
+            'GL' => 'Greenland',
+            'GD' => 'Grenada',
+            'GP' => 'Guadeloupe',
+            'GU' => 'Guam',
+            'GT' => 'Guatemala',
+            'GG' => 'Guernsey',
+            'GN' => 'Guinea',
+            'GW' => 'Guinea-Bissau',
+            'GY' => 'Guyana',
+            'HT' => 'Haiti',
+            'HM' => 'Heard Island & Mcdonald Islands',
+            'VA' => 'Holy See (Vatican City State)',
+            'HN' => 'Honduras',
+            'HK' => 'Hong Kong',
+            'HU' => 'Hungary',
+            'IS' => 'Iceland',
+            'IN' => 'India',
+            'ID' => 'Indonesia',
+            'IR' => 'Iran, Islamic Republic Of',
+            'IQ' => 'Iraq',
+            'IE' => 'Ireland',
+            'IM' => 'Isle Of Man',
+            'IL' => 'Israel',
+            'IT' => 'Italy',
+            'JM' => 'Jamaica',
+            'JP' => 'Japan',
+            'JE' => 'Jersey',
+            'JO' => 'Jordan',
+            'KZ' => 'Kazakhstan',
+            'KE' => 'Kenya',
+            'KI' => 'Kiribati',
+            'KR' => 'Korea',
+            'KW' => 'Kuwait',
+            'KG' => 'Kyrgyzstan',
+            'LA' => 'Lao People\'s Democratic Republic',
+            'LV' => 'Latvia',
+            'LB' => 'Lebanon',
+            'LS' => 'Lesotho',
+            'LR' => 'Liberia',
+            'LY' => 'Libyan Arab Jamahiriya',
+            'LI' => 'Liechtenstein',
+            'LT' => 'Lithuania',
+            'LU' => 'Luxembourg',
+            'MO' => 'Macao',
+            'MK' => 'Macedonia',
+            'MG' => 'Madagascar',
+            'MW' => 'Malawi',
+            'MY' => 'Malaysia',
+            'MV' => 'Maldives',
+            'ML' => 'Mali',
+            'MT' => 'Malta',
+            'MH' => 'Marshall Islands',
+            'MQ' => 'Martinique',
+            'MR' => 'Mauritania',
+            'MU' => 'Mauritius',
+            'YT' => 'Mayotte',
+            'MX' => 'Mexico',
+            'FM' => 'Micronesia, Federated States Of',
+            'MD' => 'Moldova',
+            'MC' => 'Monaco',
+            'MN' => 'Mongolia',
+            'ME' => 'Montenegro',
+            'MS' => 'Montserrat',
+            'MA' => 'Morocco',
+            'MZ' => 'Mozambique',
+            'MM' => 'Myanmar',
+            'NA' => 'Namibia',
+            'NR' => 'Nauru',
+            'NP' => 'Nepal',
+            'NL' => 'Netherlands',
+            'AN' => 'Netherlands Antilles',
+            'NC' => 'New Caledonia',
+            'NZ' => 'New Zealand',
+            'NI' => 'Nicaragua',
+            'NE' => 'Niger',
+            'NG' => 'Nigeria',
+            'NU' => 'Niue',
+            'NF' => 'Norfolk Island',
+            'MP' => 'Northern Mariana Islands',
+            'NO' => 'Norway',
+            'OM' => 'Oman',
+            'PK' => 'Pakistan',
+            'PW' => 'Palau',
+            'PS' => 'Palestinian Territory, Occupied',
+            'PA' => 'Panama',
+            'PG' => 'Papua New Guinea',
+            'PY' => 'Paraguay',
+            'PE' => 'Peru',
+            'PH' => 'Philippines',
+            'PN' => 'Pitcairn',
+            'PL' => 'Poland',
+            'PT' => 'Portugal',
+            'PR' => 'Puerto Rico',
+            'QA' => 'Qatar',
+            'RE' => 'Reunion',
+            'RO' => 'Romania',
+            'RU' => 'Russian Federation',
+            'RW' => 'Rwanda',
+            'BL' => 'Saint Barthelemy',
+            'SH' => 'Saint Helena',
+            'KN' => 'Saint Kitts And Nevis',
+            'LC' => 'Saint Lucia',
+            'MF' => 'Saint Martin',
+            'PM' => 'Saint Pierre And Miquelon',
+            'VC' => 'Saint Vincent And Grenadines',
+            'WS' => 'Samoa',
+            'SM' => 'San Marino',
+            'ST' => 'Sao Tome And Principe',
+            'SA' => 'Saudi Arabia',
+            'SN' => 'Senegal',
+            'RS' => 'Serbia',
+            'SC' => 'Seychelles',
+            'SL' => 'Sierra Leone',
+            'SG' => 'Singapore',
+            'SK' => 'Slovakia',
+            'SI' => 'Slovenia',
+            'SB' => 'Solomon Islands',
+            'SO' => 'Somalia',
+            'ZA' => 'South Africa',
+            'GS' => 'South Georgia And Sandwich Isl.',
+            'ES' => 'Spain',
+            'LK' => 'Sri Lanka',
+            'SD' => 'Sudan',
+            'SR' => 'Suriname',
+            'SJ' => 'Svalbard And Jan Mayen',
+            'SZ' => 'Swaziland',
+            'SE' => 'Sweden',
+            'CH' => 'Switzerland',
+            'SY' => 'Syrian Arab Republic',
+            'TW' => 'Taiwan',
+            'TJ' => 'Tajikistan',
+            'TZ' => 'Tanzania',
+            'TH' => 'Thailand',
+            'TL' => 'Timor-Leste',
+            'TG' => 'Togo',
+            'TK' => 'Tokelau',
+            'TO' => 'Tonga',
+            'TT' => 'Trinidad And Tobago',
+            'TN' => 'Tunisia',
+            'TR' => 'Turkey',
+            'TM' => 'Turkmenistan',
+            'TC' => 'Turks And Caicos Islands',
+            'TV' => 'Tuvalu',
+            'UG' => 'Uganda',
+            'UA' => 'Ukraine',
+            'AE' => 'United Arab Emirates',
+            'GB' => 'United Kingdom',
+            'US' => 'United States',
+            'UM' => 'United States Outlying Islands',
+            'UY' => 'Uruguay',
+            'UZ' => 'Uzbekistan',
+            'VU' => 'Vanuatu',
+            'VE' => 'Venezuela',
+            'VN' => 'Viet Nam',
+            'VG' => 'Virgin Islands, British',
+            'VI' => 'Virgin Islands, U.S.',
+            'WF' => 'Wallis And Futuna',
+            'EH' => 'Western Sahara',
+            'YE' => 'Yemen',
+            'ZM' => 'Zambia',
+            'ZW' => 'Zimbabwe',
+        );
+        $code = strtoupper($code);
+        if (array_key_exists($code, $countries)) {
+            return $countries[$code];
+        }
+        return null;
     }
 }

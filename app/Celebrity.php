@@ -8,7 +8,7 @@ class Celebrity extends NeoEloquent
 {
     protected $label = 'Celebrity';
 
-    protected $fillable = ['name','followers' ,'fb_id','fb_profile_url','twt_id','instagram_id'];
+    protected $fillable = ['name','followers' ,'fb_id','fb_profile_url','twt_id','instagram_id','country'];
 
     public function user(){
         return $this->belongsToMany(User::class,'FOLLOWS');
