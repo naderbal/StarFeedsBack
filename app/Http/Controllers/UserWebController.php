@@ -209,44 +209,46 @@ class UserWebController extends Controller
 
         //get celebrities followed by user of id $id
         $user=Session::get('user');
-        $celebs = $user->celebrity;
+        if($user) {
+            $celebs = $user->celebrity;
 
-        $posts = array();
-        foreach($celebs as $celeb){
-            //get all FacebookFeeds of the celebrity
-            $celebFbFeeds = FacebookFeed::where('celeb_id','=',$celeb->id)->get();
-            foreach($celebFbFeeds as $feed){
-                $platform = $this->FACEBOOK_TAG;
-                $post = new Post($feed, $platform, $celeb);
-                array_push($posts,$post);
-            }
+            $posts = array();
+            foreach ($celebs as $celeb) {
+                //get all FacebookFeeds of the celebrity
+                $celebFbFeeds = FacebookFeed::where('celeb_id', '=', $celeb->id)->get();
+                foreach ($celebFbFeeds as $feed) {
+                    $platform = $this->FACEBOOK_TAG;
+                    $post = new Post($feed, $platform, $celeb);
+                    array_push($posts, $post);
+                }
 
-            //get all TwitterFeeds of the celebrity
-            $celebTwitterFeeds = TwitterFeed::where('celeb_id','=',$celeb->id)->get();
-            foreach($celebTwitterFeeds as $feed){
-                $celebName = $celeb->name;
-                $platform = $this -> TWITTER_TAG;
-                $post = new Post($feed, $platform, $celeb);
-                array_push($posts,$post);
-            }
+                //get all TwitterFeeds of the celebrity
+                $celebTwitterFeeds = TwitterFeed::where('celeb_id', '=', $celeb->id)->get();
+                foreach ($celebTwitterFeeds as $feed) {
+                    $celebName = $celeb->name;
+                    $platform = $this->TWITTER_TAG;
+                    $post = new Post($feed, $platform, $celeb);
+                    array_push($posts, $post);
+                }
 
-            //get all InstagramFeeds of the celebrity
-            $celebInstagramFeeds = InstagramFeed::where('celeb_id','=',$celeb->id)->get();
-            foreach($celebInstagramFeeds as $feed){
-                $celebName = $celeb->name;
-                $platform = $this -> INSTAGRAM_TAG;
-                $post = new Post($feed, $platform, $celeb);
-                array_push($posts,$post);
+                //get all InstagramFeeds of the celebrity
+                $celebInstagramFeeds = InstagramFeed::where('celeb_id', '=', $celeb->id)->get();
+                foreach ($celebInstagramFeeds as $feed) {
+                    $celebName = $celeb->name;
+                    $platform = $this->INSTAGRAM_TAG;
+                    $post = new Post($feed, $platform, $celeb);
+                    array_push($posts, $post);
+                }
             }
-        }
-        //sort the posts by timestamp
-        usort($posts, array($this, 'cmp'));
-        // if page equals 0, its requested by new feeds
+            //sort the posts by timestamp
+            usort($posts, array($this, 'cmp'));
+            // if page equals 0, its requested by new feeds
 //        if($page > 0) {
 //            $pageCount = ($page - 1) * $this->count;
 //            $posts = array_slice($posts, $pageCount, $this->count);
 //        }
-        return view('pages.home')->with("data",$posts)->with("suggestions",$this->getSuggestions());
+            return view('pages.home')->with("data", $posts)->with("suggestions", $this->getSuggestions());
+        }
     }
 
     public function getNewUserFeeds($postId){

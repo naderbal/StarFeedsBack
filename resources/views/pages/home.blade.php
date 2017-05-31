@@ -124,7 +124,7 @@
 
 
 
-                @if (str_contains($feed->feedType,"photo"))
+                @if (str_contains($feed->feedType,"image") || str_contains($feed->feedType,"photo"))
 
 
 
