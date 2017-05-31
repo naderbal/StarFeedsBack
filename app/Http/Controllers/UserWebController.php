@@ -86,6 +86,14 @@ class UserWebController extends Controller
         return redirect('/');
     }
 
+    public static function cmpCelebs($celeb1, $celeb2)
+    {
+        if ($celeb1['followers'] == $celeb2['followers']) {
+            return 0;
+        }
+        return ($celeb1['followers'] < $celeb2['followers']) ? -1 : 1;
+    }
+
     public function save(Request $request){
         $name = $request->input("name");
         $email = $request->input("r-email");
@@ -351,15 +359,16 @@ class UserWebController extends Controller
 
         $returnCelebs = [];
         foreach($suggestionCelebs as $celeb){
-            array_push($returnCelebs, ["celeb"=>$celeb['celeb']]);
+            array_push($returnCelebs, $celeb['celeb']);
         }
+
         if (count($suggestionCelebs) == 0){
             $returnCelebs = $this->getSuggestionsForNewUsers($userId);
         }
 
         if(Route::getFacadeRoot()->current()->uri() == 'suggestions' ){
             return view('pages.suggestions')->with("suggestions",$returnCelebs);
-        }elseif(Route::getFacadeRoot()->current()->uri() == 'home'){
+        }else if(Route::getFacadeRoot()->current()->uri() == 'home'){
             return array_splice($returnCelebs,0,5);
         }
     }
@@ -397,8 +406,12 @@ class UserWebController extends Controller
         }
 
         usort($suggestionCelebs, array($this,'cmpCelebsScore'));
+        $returnCelebs = [];
+        foreach($suggestionCelebs as $celeb){
+            array_push($returnCelebs, $celeb['celeb']);
+        }
 
-        return $suggestionCelebs;
+        return $returnCelebs;
     }
 
     public function dislikeCelebrity($celebId){
