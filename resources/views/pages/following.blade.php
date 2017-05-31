@@ -4,9 +4,13 @@
 
 @section('content')
 
-    <h1>Following</h1>
-    <hr>
+
+
     <div class="row">
+        <ol class="breadcrumb">
+            <li><a href="/edit-account">Profile</a></li>
+            <li class="active">Following</li>
+        </ol>
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 
             @foreach($following as $result)

@@ -114,7 +114,7 @@
                 <img src="{{ $celebrity->fb_profile_url }}" class="avatar img-circle" style="width:100px; max-width: 200px;margin-top: 5px;" alt="avatar">
                 <h2>{{ $celebrity->name }}</h2>
                 @if(!$isFollowed)
-                    <a href="/follow/{{$celebrity->id}}" class="btn btn-success center-block" style="width:60%;margin-bottom: 10px;"><span class="spn"></span>Follow</a>
+                    <a href="/follow/{{$celebrity->id}}" class="btn btn-primary center-block" style="width:60%;margin-bottom: 10px;"><span class="spn"></span>Follow</a>
                 @else
                     <a href="/unfollow/{{$celebrity->id}}" class="btn btn-info center-block" style="width:60%;margin-bottom: 10px;"><span class="glyphicon glyphicon-ok"></span> Followed</a>
                 @endif

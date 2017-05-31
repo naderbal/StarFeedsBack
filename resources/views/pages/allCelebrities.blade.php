@@ -80,7 +80,7 @@
                             <div class="card-block">
                                 <h4 class="card-title text-center"><a class="celebLink" href="/timeline/{{ $result['celeb']->name }}">{{ $result['celeb']->name }}</a></h4>
                                 @if(!$result['is_followed'])
-                                    <a href="/follow/{{$result['celeb']->id}}" class="btn btn-success center-block" style="width:60%"><span class="spn"></span>Follow</a>
+                                    <a href="/follow/{{$result['celeb']->id}}" class="btn btn-primary center-block" style="width:60%"><span class="spn"></span>Follow</a>
                                 @else
                                     <a href="/unfollow/{{$result['celeb']->id}}" class="btn btn-info center-block" style="width:60%;"><span class="glyphicon glyphicon-ok"></span> Followed</a>
                                 @endif

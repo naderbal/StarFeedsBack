@@ -187,10 +187,3 @@
     @include('partials._modal')
 
 @endsection
-
-<script>
-    $(Document).ready(function () {
-
-        $('#video').height($('#facebook').height() );
-    })
-</script>

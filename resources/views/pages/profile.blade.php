@@ -2,12 +2,12 @@
 @section('title','| '.Session::get('user')->name)
 @section('content')
     <div class="container">
-        <h1>Edit Profile</h1>
+        <h1>Profile</h1>
         <hr>
         <div class="row">
             <!-- left column -->
             <div class="col-md-3">
-                <div class="text-center">
+                <div class="">
                     <h3><a class="" href="/following" style="color:inherit">Following </a>: {{sizeof(Session::get('user')->celebrity)}}</h3>
                     <button class="btn btn-primary" data-toggle="modal" data-target="#myModalHorizontal">
                         Change Password
@@ -317,7 +317,7 @@
                 </div>
 
                 <div class="form-group">
-                    {{Form::submit('Update',array('class' => 'btn btn-success'))}}
+                    {{Form::submit('Update',array('class' => 'btn btn-primary'))}}
                 </div>
 
                 {!! Form::close() !!}
@@ -367,7 +367,7 @@
                                     </div>
 
                                     <div class="form-group">
-                                        {{Form::submit('Save Changes',array('class' => 'btn btn-success'))}}
+                                        {{Form::submit('Save Changes',array('class' => 'btn btn-primary'))}}
                                     </div>
 
                                 {!! Form::close() !!}

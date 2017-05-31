@@ -28,7 +28,7 @@
 
             <div class="form-group">
                 {{Form::label('','')}}
-                {{Form::submit('Send Message',array('class' => 'btn btn-success'))}}
+                {{Form::submit('Send Message',array('class' => 'btn btn-primary'))}}
             </div>
 
             {!! Form::close() !!}

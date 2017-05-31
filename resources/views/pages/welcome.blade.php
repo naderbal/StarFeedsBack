@@ -23,7 +23,7 @@
 
 
                 <div class="form-group">
-                    {{Form::submit('LogIn',array('class' => 'btn btn-success center-block'))}}
+                    {{Form::submit('LogIn',array('class' => 'btn btn-primary center-block'))}}
                 </div>
 
                 {!! Form::close() !!}
@@ -328,7 +328,7 @@
                 </div>
 
                 <div class="form-group">
-                    {{Form::submit('Register',array('class' => 'btn btn-success center-block'))}}
+                    {{Form::submit('Register',array('class' => 'btn btn-primary center-block'))}}
                 </div>
 
                 {!! Form::close() !!}
