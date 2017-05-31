@@ -153,7 +153,6 @@ class CelebrityController extends Controller
 
     public function getFacebookProfilePicture($id){
         $url = "https://graph.facebook.com/v2.8/$id/picture?debug=all&format=json&method=get&pretty=0&redirect=false&suppress_http_code=1";
-
         try {
             $result = file_get_contents($url);
             $decoded = json_decode($result, false);

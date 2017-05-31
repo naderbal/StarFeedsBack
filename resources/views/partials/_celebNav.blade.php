@@ -1,6 +1,12 @@
+<style>
+    .nav-tabs>li.active>a{
+        border-color:white;
+    }
+</style>
+
 <div class="row ">
     <div class="col-md-12 col-sm-12 col-xs-12">
-        <ul class="nav nav-tabs">
+        <ul class="nav nav-tabs" style="border-color:white">
             <li role="presentation" id="allTab" class="{{$allActive}}" ><a class="celebNav" href="/celebrities/all"  >All</a></li>
             {{--<li role="presentation" id="regionTab" class="{{$regionActive}}" ><a href="/celebrities/region" >Region</a></li>--}}
             <li role="presentation" id="categoriesTab" class="{{$categoriesActive}}" ><a class="celebNav" href="/celebrities/categories" >Categories</a></li>

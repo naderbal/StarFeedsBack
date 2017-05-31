@@ -75,7 +75,7 @@
 </style>
 
 
-<nav class="navbar navbar-default secondary " style="height:50px; border-bottom:1px solid #ccc">
+<nav class="navbar navbar-default secondary " style="border-bottom:1px solid #ccc">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header" >
@@ -85,7 +85,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a href="#"><img class="img-responsive" style="max-height: 51px;float:left;" src="{{ URL::asset("images/logo.png") }}"></a>
+            <a href="#"><img class="img-responsive" style="max-height: 51px;" src="{{ URL::asset("images/logo.png") }}"></a>
 
         </div>
 
@@ -121,7 +121,7 @@
                         <div class="form-group has-feedback" style="height:inherit; background-color: transparent;">
 
                             {{Form::label('search', 'Search:',array('class' => 'sr-only') )}}
-                            {{Form::text('search', null,array('class' => 'form-control','placeholder' => 'Search' ))}}
+                            {{Form::text('search', null,array('class' => 'form-control','id' => 'search','placeholder' => 'Search' ))}}
                             <span class="glyphicon glyphicon-search form-control-feedback "></span>
 
                         </div>
@@ -175,3 +175,4 @@
         @endif
     </div><!-- /.container-fluid -->
 </nav>
+

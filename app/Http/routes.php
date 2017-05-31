@@ -56,12 +56,19 @@ Route::post('/update-celeb','UserController@updateCeleb');
 
 //web
 
+
+
 Route::group(['middleware' => ['web']],function(){
 
     Route::get('/','UserWebController@getWelcomePage');
     Route::post('/register','UserWebController@save');
     Route::post('/login','UserWebController@loginEmail');
+
+    Route::get('/google', 'UserWebController@redirectToProvider');
+    Route::get('/google/callback', 'UserWebController@handleProviderCallback');
+
     Route::post('/update-user','UserWebController@updateUser');
+    Route::post('/update-user-password','UserWebController@updateUserPassword');
     Route::get('/home','UserWebController@getUserFeeds');
     Route::get('/logout','UserWebController@logOut');
     Route::post('/search','UserWebController@Search');
@@ -87,6 +94,13 @@ Route::group(['middleware' => ['web']],function(){
     Route::get('/admin/add-celebrity','UserWebController@getAdminAddCeleb');
     Route::get('/admin/edit-celebrity','UserWebController@getAdminEditCeleb');
     Route::post('/adminGetCeleb','UserWebController@adminGetCeleb');
+    Route::get('/admin/messages','UserWebController@getMessages');
+    Route::post('/admin/update-celeb','UserWebController@updateCeleb');
+    Route::get('/admin/delete-celeb','UserWebController@deleteCeleb');
+
+    Route::post('/send-message','UserWebController@postMessage');
+    Route::get('/delete-message/{id}','UserWebController@deleteMessage');
+
 
 });
 

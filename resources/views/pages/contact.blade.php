@@ -8,18 +8,31 @@
         <div class="col-md-12">
             <h1>Contact Us</h1>
             <hr>
-            <form>
-                <div class="form-group">
-                    <label name="subject"> Subject: </label>
-                    <input id="subject" name="subject" class="form-control" placeholder="Subject">
+            @if(Session::has('success'))
+                <div class="alert alert-success alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <strong>Thank you!</strong> Your message has been sent!
                 </div>
-                <div class="form-group">
-                    <label name="message"> Message: </label>
-                    <textarea id="message" name="message" class="form-control" placeholder="Type your message here..."></textarea>
-                </div>
+            @endif
+            {!! Form::open(array('url' => '/send-message','data-parsley-validate'=>"")) !!}
 
-                <input type="submit" value="Send Message" class="btn btn-success">
-            </form>
+            <div class="form-group">
+                {{Form::label('subject', 'Subject :')}}
+                {{Form::text('subject',null,array('class' => 'form-control','placeholder'=>'Subject','required'))}}
+            </div>
+
+            <div class="form-group">
+                {{Form::label('message', 'Message :' )}}
+                {{Form::textarea('message', null,array('class' => 'form-control','placeholder' => 'Type your message here...','required' ))}}
+            </div>
+
+            <div class="form-group">
+                {{Form::label('','')}}
+                {{Form::submit('Send Message',array('class' => 'btn btn-success'))}}
+            </div>
+
+            {!! Form::close() !!}
+
         </div>
     </div>
 @endsection

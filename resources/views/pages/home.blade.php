@@ -166,8 +166,8 @@
 
         </div>
 
-        <div class="col-md-3 col-md-offset-1 col-sm-3 sol-sm-offset-1 hidden-xs secondary" style="border: 1px solid #ddd; border-radius: 10px">
-            <h3><a class="celebLink" href="/suggestions">Suggestions</a></h3>
+        <div class="col-md-3 col-md-offset-1 col-sm-4 sol-sm-offset-1 hidden-xs secondary" style="border: 1px solid #ddd; border-radius: 10px">
+            <h3><a class="celebLink"  href="/suggestions">Suggestions</a></h3>
             <hr>
             @foreach($suggestions as $suggestion)
 
@@ -187,3 +187,10 @@
     @include('partials._modal')
 
 @endsection
+
+<script>
+    $(Document).ready(function () {
+
+        $('#video').height($('#facebook').height() );
+    })
+</script>

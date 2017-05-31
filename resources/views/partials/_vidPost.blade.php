@@ -11,9 +11,13 @@
                 {{--<div class="embed-responsive embed-responsive-16by9">--}}
                     {{--<iframe class="" src="{{ $postvid }}" frameborder="0" allowfullscreen style="margin:0 auto;"></iframe>--}}
                 {{--</div>--}}
-                <div id="styled_video_container">
-                    <video src="{{ $postvid }}" style="width:100%" controls muted preload="metadata">
-                </div>
+                    @if($postapp == "Facebook")
+                        <iframe id="video" src="https://www.facebook.com/plugins/video.php?href={{ $postvid }}" style="width:100%" controls muted preload="metadata"></iframe>
+
+                    @else
+                        <video src="{{ $postvid }}" style="width:100%" controls muted preload="metadata"></video>
+
+                    @endif
                 <div class="caption">
                     <p>{{ $cap }}</p>
                 </div>

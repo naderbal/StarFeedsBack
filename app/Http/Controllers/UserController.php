@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use App\FacebookFeed;
 use App\TwitterFeed;
 use App\Post;
+use Laravel\Socialite\Contracts\User as ProviderUser;
 
 class UserController extends Controller
 {
@@ -48,10 +49,11 @@ class UserController extends Controller
         ];
     }
 
-    public function loginFacebook(Request $request){
-        $id = $request->input("id");
-        $name = $request->input("name");
-        $email = $request->input("email");
+    public function loginFacebook(ProviderUser $providerUser){
+        $id = SocialAccount::whereProvider('facebook')
+            ->whereProviderUserId($providerUser->getId());
+        $name = $providerUser->getName();
+        $email = $providerUser->getEmail();
         $user = User::where('fb_id','=',$id)->first();
         $followersCount = 0;
         if($user == null){

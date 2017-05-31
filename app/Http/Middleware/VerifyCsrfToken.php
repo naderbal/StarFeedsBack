@@ -25,6 +25,7 @@ class VerifyCsrfToken extends BaseVerifier
         '/add-admin',
         'follow',
         'un-follow',
+        '/login',
         'api/login-email',
         'api/login-facebook',
         'api/login-google',

@@ -118,6 +118,9 @@
                 @else
                     <a href="/unfollow/{{$celebrity->id}}" class="btn btn-info center-block" style="width:60%;margin-bottom: 10px;"><span class="glyphicon glyphicon-ok"></span> Followed</a>
                 @endif
+                @if($celebrity->fb_id != null) <span class="fa fa-facebook"></span> @endif
+                @if($celebrity->instagram_id != null) <span class="fa fa-twitter"></span> @endif
+                @if($celebrity->twt_id != null) <span class="fa fa-instagram"></span> @endif
             </div>
         </div>
 

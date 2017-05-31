@@ -8,7 +8,7 @@ class Message extends NeoEloquent
 {
     protected $label = 'Message';
 
-    protected $fillable = ['message'];
+    protected $fillable = ['message','subject'];
 
     public function celebrity()
     {

@@ -1,20 +1,24 @@
 <?php
 
 
+namespace App\Http\Controllers\Auth;
 namespace App\Http\Controllers;
 
 use App\Category;
 use App\Celebrity;
 use App\InstagramFeed;
 use App\Like;
+use App\Message;
 use App\User;
 use App\Http\Requests;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\FacebookFeed;
 use App\TwitterFeed;
 use App\Post;
 use Session;
+use Socialite;
 
 class UserWebController extends Controller
 {
@@ -49,6 +53,18 @@ class UserWebController extends Controller
 
     }
 
+    public function redirectToProvider()
+    {
+        return Socialite::driver('google')->redirect();
+    }
+
+    public function handleProviderCallback()
+    {
+        $user = Socialite::driver('google')->user();
+        dd($user);
+        // $user->token;
+    }
+
     public function logOut(){
         Session::flush();
         return redirect('/');
@@ -59,18 +75,24 @@ class UserWebController extends Controller
         $email = $request->input("r-email");
         $password = $request->input("password");
         $gender = $request->input("gender");
+        $country = $request->input("country");
+        if(strlen($country) == 2) {
+            $country = $this->getCountryByCode($country);
+        }
         $age = $request->input("age");
+        $isAdmin = false;
 
-//        $result = filter_var( $email , FILTER_VALIDATE_EMAIL );
-//
-//        if(!$result){
-//            Session::flash("error","This email does not exist!");
-//            echo "hi";
-//            return redirect()->back();
-//        }
 
         if(User::where("email",'=',$email)->first() === null){
-            $user = new User(["name"=>$name,"email"=>$email,"password"=>$password,"gender"=>$gender,"age"=>$age]);
+            $user = new User([
+                "name"=>$name,
+                "email"=>$email,
+                "password"=>$password,
+                "gender"=>$gender,
+                "age"=>$age,
+                "country"=>$country,
+                'is_admin'=>$isAdmin
+            ]);
             $user->save();
             Session::put('user',$user);
         }else{
@@ -81,30 +103,23 @@ class UserWebController extends Controller
         return redirect('/celebrities/all');
     }
 
-    public function updateUser(Request $request){
+    public function updateUserPassword(Request $request){
         $id = Session::get('user')->id;
-        $name = $request->input('name');
-        $email = $request->input('email');
         $password = $request->input('password');
         $new_password = $request->input('new_password');
-        $age = $request->input('age');
-        $gender = $request->input('gender');
         $user = User::find($id);
         $is_successful = true;
 
         if ($user == null || $user->password != $password){
             $is_successful = false;
-            Session::flash('error','Incorrect Password');
+            Session::flash('error','Incorrect Password!');
             return view('pages.profile');
         } else {
-                $user->name = $name;
-                $user->password = $new_password;
-                $user->email = $email;
-                $user->age = $age;
-                $user->gender = $gender;
+            $user->password = $new_password;
             if($is_successful)
             {
                 $user->save();
+                Session::flash('success','Your password has been updated!');
                 $is_successful = true;
             } else {
                 $is_successful = false;
@@ -112,6 +127,40 @@ class UserWebController extends Controller
         }
         Session::put('user',$user);
         return redirect('/edit-account');
+    }
+
+    public function updateUser(Request $request){
+        $id = Session::get('user')->id;
+        $name = $request->input('name');
+        $email = $request->input('email');
+        $age = $request->input('age');
+        $gender = $request->input('gender');
+        $country = $request->input('country');
+        $user = User::find($id);
+        $is_successful = true;
+        $country = $this->getCountryByCode($country);
+
+        if ($user == null){
+            $is_successful = false;
+            Session::flash('error','Something went wrong, Try Again!');
+            return view('pages.profile');
+        } else {
+                $user->name = $name;
+                $user->email = $email;
+                $user->age = $age;
+                $user->gender = $gender;
+                $user->country = $country;
+            if($is_successful)
+            {
+                $user->save();
+                Session::flash('success','Your information has been updated!');
+                $is_successful = true;
+            } else {
+                $is_successful = false;
+            }
+        }
+        Session::put('user',$user);
+        return view('pages.profile');
     }
 
     public function saveAdmin(Request $request){
@@ -252,12 +301,13 @@ class UserWebController extends Controller
 
     public function getSuggestions(){
         $user = Session::get('user');
+        $userId = $user->id;
+        $country = $user->country;
         $likes = $user->likes()->orderBy("score","desc")->get();
         $dislikedCelebs = $user->dislikedCelebrity()->get();
         $suggestionCelebs = [];
         foreach($likes as $like){
             $category = $like->category;
-            //todo ask kinane is there a way to get children of node (all the celebs where they have this category)
             $celebs = Celebrity::get();
             foreach($celebs as $celeb){
                 // check if celeb belongs to category
@@ -265,19 +315,74 @@ class UserWebController extends Controller
                     // check if user already follows celeb
                     if(!$user->celebrity->contains($celeb)) {
                         if(!$dislikedCelebs->contains($celeb))
-                            array_push($suggestionCelebs, $celeb);
+                            if($celeb->country == $country) {
+                                $celebScore = ["score"=>20,"celeb"=>$celeb];
+                            } else {
+                                $celebScore = ["score" => 10, "celeb" => $celeb];
+                            }
+                        array_push($suggestionCelebs, $celebScore);
                     }
                 }
             }
         }
+        foreach($suggestionCelebs as $celeb){
+            if($celeb['celeb']->country == $country){
+                $celeb['score']+=20;
+            }
+        }
+
+        usort($suggestionCelebs, array($this,'cmpCelebsScore'));
+
+        $returnCelebs = [];
+        foreach($suggestionCelebs as $celeb){
+            array_push($returnCelebs, ["celeb"=>$celeb['celeb']]);
+        }
         if (count($suggestionCelebs) == 0){
-            $suggestionCelebs = $this->getSuggestionsForNewUsers($user->id);
+            $returnCelebs = $this->getSuggestionsForNewUsers($userId);
         }
+
         if(Route::getFacadeRoot()->current()->uri() == 'suggestions' ){
-            return view('pages.suggestions')->with("suggestions",$suggestionCelebs);
+            return view('pages.suggestions')->with("suggestions",$returnCelebs);
         }elseif(Route::getFacadeRoot()->current()->uri() == 'home'){
-            return array_splice($suggestionCelebs,0,5);
+            return array_splice($returnCelebs,0,5);
         }
+    }
+
+    public static function cmpCelebsScore($celeb1, $celeb2)
+    {
+        if ($celeb1['score'] == $celeb2['score']) {
+            return 0;
+        }
+        return ($celeb1['score'] > $celeb2['score']) ? -1 : 1;
+    }
+
+    private function getSuggestionsForNewUsers($userId){
+        $user = User::find($userId);
+        $country = $user->country;
+        $dislikedCelebs = $user->dislikedCelebrity()->get();
+        $suggestionCelebs = [];
+        $allCelebs = Celebrity::all();
+        //$allCelebs = $allCelebs->toArray();
+        $celebsArray = [];
+        foreach($allCelebs as $celeb){
+            array_push($celebsArray,$celeb);
+        }
+        usort($celebsArray, array($this,'cmpCelebs'));
+        //$allCelebs = array_reverse($allCelebs);
+        foreach($allCelebs as $celeb) {
+            if (!$dislikedCelebs->contains($celeb) && !$user->celebrity->contains($celeb))
+                if($celeb->country == $country) {
+                    $celebScore = ["score"=>20,"celeb"=>$celeb];
+
+                } else {
+                    $celebScore = ["score" => 10, "celeb" => $celeb];
+                }
+            array_push($suggestionCelebs, $celebScore);
+        }
+
+        usort($suggestionCelebs, array($this,'cmpCelebsScore'));
+
+        return $suggestionCelebs;
     }
 
     public function dislikeCelebrity($celebId){
@@ -403,7 +508,7 @@ class UserWebController extends Controller
     public function getAdminAddCeleb(){
         $user=Session::get('user');
         if($user->is_admin){
-            return view('pages.adminAddCeleb')->with("error",false);
+            return view('pages.adminAddCeleb');
         }
         else
             return redirect()->back();
@@ -433,6 +538,7 @@ class UserWebController extends Controller
         $twt_id = $request->input("twt_id");
         $instagram_id = $request->input("instagram_id");
         $category = $request->input("category");
+        $country = $request->input("country");
         /*if (count(Celebrity::where(['fb_id','=',$fb_id])->get()) > 0){
             return;
         }*/
@@ -446,7 +552,8 @@ class UserWebController extends Controller
                 "fb_id" => $fb_id,
                 "fb_profile_url"=>$fbProfilePic,
                 "twt_id" => $twt_id,
-                "instagram_id" => $instagram_id
+                "instagram_id" => $instagram_id,
+                "country" => $country,
             ]
         );
 
@@ -458,7 +565,8 @@ class UserWebController extends Controller
         $celeb->save();
         $celeb->category()->save($categoryVar);
 
-        return redirect()->back();
+        Session::flash('success',"Celebrity has been added!");
+        return view('pages.adminAddCeleb');
     }
 
     public function unFollowCeleb($celebid){
@@ -512,6 +620,7 @@ class UserWebController extends Controller
             $cel = ["is_followed" => $isFollowed,"celeb" => $celeb];
             array_push($celebsSearched,$cel);
         }
+
         return view('pages.search')->with("result", $celebsSearched)->with("search", $request->input("search"));
     }
 
@@ -622,4 +731,351 @@ class UserWebController extends Controller
             return redirect()->back();
     }
 
+    public function adminGetMessages(){
+        $user=Session::get('user');
+        if($user->is_admin) {
+            return view('pages.adminMessages');
+        }
+        else
+            return redirect()->back();
+    }
+
+    public function deleteCeleb(){
+        $celeb = Session::get('celebrity');
+
+        $facebookFeed = $celeb->facebookFeed;
+        $twitterFeed = $celeb->instagramFeed;
+        $instagramFeed = $celeb->twitterFeed;
+
+        foreach ($facebookFeed as $relation) {
+            $relation->delete();
+        }
+
+        foreach ($twitterFeed as $relation) {
+            $relation->delete();
+        }
+
+        foreach ($instagramFeed as $relation) {
+            $relation->delete();
+        }
+
+        $celeb->delete();
+        Session::forget('celebrity');
+
+        return redirect()->back();
+    }
+
+    public function updateCeleb(Request $request){
+            $celebId = Session::get('celebrity')->id;
+            $name = $request->input("name");
+            $fb_id = $request->input("fb_id");
+            $twt_id = $request->input("twt_id");
+            $instagram_id = $request->input("instagram_id");
+            $category = $request->input("category");
+            $country = $request->input("country");
+            $celeb = Celebrity::find($celebId);
+            if(!$celeb) return;
+            if($name != $celeb->name && $name!=null)$celeb->name=$name;
+            if($fb_id != $celeb->fb_id && $fb_id!=null)$celeb->fb_id=$fb_id;
+            if($twt_id != $celeb->twt_id && $twt_id!=null)$celeb->twt_id=$twt_id;
+            if($instagram_id != $celeb->instagram_id && $instagram_id!=null)$celeb->instagram_id=$instagram_id;
+            if($country !=null && strlen($country) == 2) {
+                $country = $this->getCountryByCode($country);
+            }
+            if($country != $celeb->country)$celeb->country=$country;
+            $categoryVar = Category::where("category",'=',$category)->get()->first();
+            if(!$celeb->category()->first()->category == $category){
+                if(!$categoryVar) {
+                    $categoryVar = new Category(["category" => $category]);
+                    $categoryVar->save();
+                }
+                $celeb->save();
+                $celeb->category()->save($categoryVar);
+            }
+            $celeb->save();
+            Session::flash('success','success');
+            return view('pages.adminEditCeleb');
+    }
+
+    public function postMessage(Request $request){
+        $messageText = $request->input("message");
+        $subject = $request->input('subject');
+        $user = Session::get('user');
+
+        if($user){
+            $message = new Message(["message"=>$messageText,"subject"=>$subject]);
+            $user->message()->save($message);
+            Session::flash('success','success');
+        }
+        return view('pages.contact');
+    }
+
+    public function getMessages(){
+        return view('pages.adminMessages')->with("messages",Message::all());
+    }
+
+    public function deleteMessage($messageId){
+        $message = Message::find($messageId);
+
+        if($message){
+            $message->delete();
+        }
+        return redirect()->back();
+    }
+
+    public function getCountryByCode($code){
+        $countries = array
+        (
+            'AF' => 'Afghanistan',
+            'AX' => 'Aland Islands',
+            'AL' => 'Albania',
+            'DZ' => 'Algeria',
+            'AS' => 'American Samoa',
+            'AD' => 'Andorra',
+            'AO' => 'Angola',
+            'AI' => 'Anguilla',
+            'AQ' => 'Antarctica',
+            'AG' => 'Antigua And Barbuda',
+            'AR' => 'Argentina',
+            'AM' => 'Armenia',
+            'AW' => 'Aruba',
+            'AU' => 'Australia',
+            'AT' => 'Austria',
+            'AZ' => 'Azerbaijan',
+            'BS' => 'Bahamas',
+            'BH' => 'Bahrain',
+            'BD' => 'Bangladesh',
+            'BB' => 'Barbados',
+            'BY' => 'Belarus',
+            'BE' => 'Belgium',
+            'BZ' => 'Belize',
+            'BJ' => 'Benin',
+            'BM' => 'Bermuda',
+            'BT' => 'Bhutan',
+            'BO' => 'Bolivia',
+            'BA' => 'Bosnia And Herzegovina',
+            'BW' => 'Botswana',
+            'BV' => 'Bouvet Island',
+            'BR' => 'Brazil',
+            'IO' => 'British Indian Ocean Territory',
+            'BN' => 'Brunei Darussalam',
+            'BG' => 'Bulgaria',
+            'BF' => 'Burkina Faso',
+            'BI' => 'Burundi',
+            'KH' => 'Cambodia',
+            'CM' => 'Cameroon',
+            'CA' => 'Canada',
+            'CV' => 'Cape Verde',
+            'KY' => 'Cayman Islands',
+            'CF' => 'Central African Republic',
+            'TD' => 'Chad',
+            'CL' => 'Chile',
+            'CN' => 'China',
+            'CX' => 'Christmas Island',
+            'CC' => 'Cocos (Keeling) Islands',
+            'CO' => 'Colombia',
+            'KM' => 'Comoros',
+            'CG' => 'Congo',
+            'CD' => 'Congo, Democratic Republic',
+            'CK' => 'Cook Islands',
+            'CR' => 'Costa Rica',
+            'CI' => 'Cote D\'Ivoire',
+            'HR' => 'Croatia',
+            'CU' => 'Cuba',
+            'CY' => 'Cyprus',
+            'CZ' => 'Czech Republic',
+            'DK' => 'Denmark',
+            'DJ' => 'Djibouti',
+            'DM' => 'Dominica',
+            'DO' => 'Dominican Republic',
+            'EC' => 'Ecuador',
+            'EG' => 'Egypt',
+            'SV' => 'El Salvador',
+            'GQ' => 'Equatorial Guinea',
+            'ER' => 'Eritrea',
+            'EE' => 'Estonia',
+            'ET' => 'Ethiopia',
+            'FK' => 'Falkland Islands (Malvinas)',
+            'FO' => 'Faroe Islands',
+            'FJ' => 'Fiji',
+            'FI' => 'Finland',
+            'FR' => 'France',
+            'GF' => 'French Guiana',
+            'PF' => 'French Polynesia',
+            'TF' => 'French Southern Territories',
+            'GA' => 'Gabon',
+            'GM' => 'Gambia',
+            'GE' => 'Georgia',
+            'DE' => 'Germany',
+            'GH' => 'Ghana',
+            'GI' => 'Gibraltar',
+            'GR' => 'Greece',
+            'GL' => 'Greenland',
+            'GD' => 'Grenada',
+            'GP' => 'Guadeloupe',
+            'GU' => 'Guam',
+            'GT' => 'Guatemala',
+            'GG' => 'Guernsey',
+            'GN' => 'Guinea',
+            'GW' => 'Guinea-Bissau',
+            'GY' => 'Guyana',
+            'HT' => 'Haiti',
+            'HM' => 'Heard Island & Mcdonald Islands',
+            'VA' => 'Holy See (Vatican City State)',
+            'HN' => 'Honduras',
+            'HK' => 'Hong Kong',
+            'HU' => 'Hungary',
+            'IS' => 'Iceland',
+            'IN' => 'India',
+            'ID' => 'Indonesia',
+            'IR' => 'Iran, Islamic Republic Of',
+            'IQ' => 'Iraq',
+            'IE' => 'Ireland',
+            'IM' => 'Isle Of Man',
+            'IL' => 'Israel',
+            'IT' => 'Italy',
+            'JM' => 'Jamaica',
+            'JP' => 'Japan',
+            'JE' => 'Jersey',
+            'JO' => 'Jordan',
+            'KZ' => 'Kazakhstan',
+            'KE' => 'Kenya',
+            'KI' => 'Kiribati',
+            'KR' => 'Korea',
+            'KW' => 'Kuwait',
+            'KG' => 'Kyrgyzstan',
+            'LA' => 'Lao People\'s Democratic Republic',
+            'LV' => 'Latvia',
+            'LB' => 'Lebanon',
+            'LS' => 'Lesotho',
+            'LR' => 'Liberia',
+            'LY' => 'Libyan Arab Jamahiriya',
+            'LI' => 'Liechtenstein',
+            'LT' => 'Lithuania',
+            'LU' => 'Luxembourg',
+            'MO' => 'Macao',
+            'MK' => 'Macedonia',
+            'MG' => 'Madagascar',
+            'MW' => 'Malawi',
+            'MY' => 'Malaysia',
+            'MV' => 'Maldives',
+            'ML' => 'Mali',
+            'MT' => 'Malta',
+            'MH' => 'Marshall Islands',
+            'MQ' => 'Martinique',
+            'MR' => 'Mauritania',
+            'MU' => 'Mauritius',
+            'YT' => 'Mayotte',
+            'MX' => 'Mexico',
+            'FM' => 'Micronesia, Federated States Of',
+            'MD' => 'Moldova',
+            'MC' => 'Monaco',
+            'MN' => 'Mongolia',
+            'ME' => 'Montenegro',
+            'MS' => 'Montserrat',
+            'MA' => 'Morocco',
+            'MZ' => 'Mozambique',
+            'MM' => 'Myanmar',
+            'NA' => 'Namibia',
+            'NR' => 'Nauru',
+            'NP' => 'Nepal',
+            'NL' => 'Netherlands',
+            'AN' => 'Netherlands Antilles',
+            'NC' => 'New Caledonia',
+            'NZ' => 'New Zealand',
+            'NI' => 'Nicaragua',
+            'NE' => 'Niger',
+            'NG' => 'Nigeria',
+            'NU' => 'Niue',
+            'NF' => 'Norfolk Island',
+            'MP' => 'Northern Mariana Islands',
+            'NO' => 'Norway',
+            'OM' => 'Oman',
+            'PK' => 'Pakistan',
+            'PW' => 'Palau',
+            'PS' => 'Palestinian Territory, Occupied',
+            'PA' => 'Panama',
+            'PG' => 'Papua New Guinea',
+            'PY' => 'Paraguay',
+            'PE' => 'Peru',
+            'PH' => 'Philippines',
+            'PN' => 'Pitcairn',
+            'PL' => 'Poland',
+            'PT' => 'Portugal',
+            'PR' => 'Puerto Rico',
+            'QA' => 'Qatar',
+            'RE' => 'Reunion',
+            'RO' => 'Romania',
+            'RU' => 'Russian Federation',
+            'RW' => 'Rwanda',
+            'BL' => 'Saint Barthelemy',
+            'SH' => 'Saint Helena',
+            'KN' => 'Saint Kitts And Nevis',
+            'LC' => 'Saint Lucia',
+            'MF' => 'Saint Martin',
+            'PM' => 'Saint Pierre And Miquelon',
+            'VC' => 'Saint Vincent And Grenadines',
+            'WS' => 'Samoa',
+            'SM' => 'San Marino',
+            'ST' => 'Sao Tome And Principe',
+            'SA' => 'Saudi Arabia',
+            'SN' => 'Senegal',
+            'RS' => 'Serbia',
+            'SC' => 'Seychelles',
+            'SL' => 'Sierra Leone',
+            'SG' => 'Singapore',
+            'SK' => 'Slovakia',
+            'SI' => 'Slovenia',
+            'SB' => 'Solomon Islands',
+            'SO' => 'Somalia',
+            'ZA' => 'South Africa',
+            'GS' => 'South Georgia And Sandwich Isl.',
+            'ES' => 'Spain',
+            'LK' => 'Sri Lanka',
+            'SD' => 'Sudan',
+            'SR' => 'Suriname',
+            'SJ' => 'Svalbard And Jan Mayen',
+            'SZ' => 'Swaziland',
+            'SE' => 'Sweden',
+            'CH' => 'Switzerland',
+            'SY' => 'Syrian Arab Republic',
+            'TW' => 'Taiwan',
+            'TJ' => 'Tajikistan',
+            'TZ' => 'Tanzania',
+            'TH' => 'Thailand',
+            'TL' => 'Timor-Leste',
+            'TG' => 'Togo',
+            'TK' => 'Tokelau',
+            'TO' => 'Tonga',
+            'TT' => 'Trinidad And Tobago',
+            'TN' => 'Tunisia',
+            'TR' => 'Turkey',
+            'TM' => 'Turkmenistan',
+            'TC' => 'Turks And Caicos Islands',
+            'TV' => 'Tuvalu',
+            'UG' => 'Uganda',
+            'UA' => 'Ukraine',
+            'AE' => 'United Arab Emirates',
+            'GB' => 'United Kingdom',
+            'US' => 'United States',
+            'UM' => 'United States Outlying Islands',
+            'UY' => 'Uruguay',
+            'UZ' => 'Uzbekistan',
+            'VU' => 'Vanuatu',
+            'VE' => 'Venezuela',
+            'VN' => 'Viet Nam',
+            'VG' => 'Virgin Islands, British',
+            'VI' => 'Virgin Islands, U.S.',
+            'WF' => 'Wallis And Futuna',
+            'EH' => 'Western Sahara',
+            'YE' => 'Yemen',
+            'ZM' => 'Zambia',
+            'ZW' => 'Zimbabwe',
+        );
+        $code = strtoupper($code);
+        if (array_key_exists($code, $countries)) {
+            return $countries[$code];
+        }
+        return null;
+    }
 }
