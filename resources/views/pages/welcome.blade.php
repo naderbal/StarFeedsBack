@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="row">
-        <div class="col-md-5">
+        <div class="col-lg-5 col-md-5 col-sm-5 ">
             <div class="secondary jumbotron" style="border:1px solid #ccc;">
                 <h3>Sign In</h3>
                 <hr>
@@ -28,16 +28,15 @@
 
                 {!! Form::close() !!}
                 <hr>
-                <a href="/redirect" class="btn btn-block btn-social btn-facebook">
+                <a href="/redirect" class="btn btn-block center-block btn-social btn-facebook">
                     <span class="fa fa-facebook"></span> Sign in with Facebook
                 </a>
-                <hr>
                 <a href="/google" class="btn btn-block btn-social btn-google">
                     <span class="fa fa-google"></span> Sign in with Google
                 </a>
             </div>
         </div>
-        <div class="col-md-5 col-md-offset-2">
+        <div class="col-lg-5 col-md-5 col-sm-6 col-md-offset-2 col-sm-offset-1">
             <div class="jumbotron secondary" style="border:1px solid #ccc;">
                 <h3>Register</h3>
                 <hr>

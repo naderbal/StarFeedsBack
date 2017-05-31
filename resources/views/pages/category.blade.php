@@ -13,7 +13,7 @@
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 
-            <h4><a class="celebLink" href="/celebrities/categories">Categories </a> > {{ $category->category }}</h4>
+            <h4><a class="celebLink" href="/celebrities/categories">Categories </a> / {{ $category->category }}</h4>
 
 
             @foreach($celebrities as $result)

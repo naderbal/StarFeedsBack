@@ -4,7 +4,7 @@
     </div>
     <div class="media-body">
         <h4 class="media-heading"><a class="celebLink" href="/timeline/{{$usrname}}">{{ $usrname }}</a> <small>   {{ $date }}</small></h4>
-        <p style="margint-bottom:5px;"><span class="fa fa-{{ $postapp }} media-object" style="padding-right: 10px; padding-top: 5px; float: left;" ></span></p>
+        <p style="margint-bottom:5px;"><span class="fa fa-{{ $postapp }} media-object" style="padding-right: 10px; padding-top: 3px; float: left;" ></span></p>
 
         <p style="font-size: medium">
             {{ $post }}

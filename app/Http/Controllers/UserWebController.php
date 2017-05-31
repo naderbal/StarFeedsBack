@@ -338,6 +338,7 @@ class UserWebController extends Controller
                 if($celeb->category->contains($category)){
                     // check if user already follows celeb
                     if(!$user->celebrity->contains($celeb)) {
+                        $celebScore=['score'=>0,'celeb'=>$celeb];
                         if(!$dislikedCelebs->contains($celeb))
                             if($celeb->country == $country) {
                                 $celebScore = ["score"=>20,"celeb"=>$celeb];

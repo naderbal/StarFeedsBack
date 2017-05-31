@@ -153,7 +153,8 @@
                                'postvid'=> $feed->link,
                                'postapp'=> $feed->platform,
                                'date'=>    $feed->date,
-                               'cap'=>     $feed->text
+                               'cap'=>     $feed->text,
+                               'postid' => $feed->id
                               ])
 
 
