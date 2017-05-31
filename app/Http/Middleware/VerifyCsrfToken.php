@@ -18,6 +18,7 @@ class VerifyCsrfToken extends BaseVerifier
         'post-message',
         'delete-message',
         'delete-celeb',
+        'update-celeb',
         '/save-user',
         '/api/update-user',
         '/save-admin',

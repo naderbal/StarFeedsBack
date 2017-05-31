@@ -52,6 +52,7 @@ Route::post('/post-message','UserController@postMessage');
 Route::post('/delete-message','UserController@deleteMessage');
 Route::get('/get-messages','UserController@getMessages');
 Route::post('/delete-celeb','UserController@deleteCeleb');
+Route::post('/update-celeb','UserController@updateCeleb');
 
 //web
 

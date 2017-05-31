@@ -579,11 +579,10 @@ class UserController extends Controller
         $celebId = $request->input("celeb-id");
 
         $celeb = Celebrity::find($celebId);
-
+        if(!$celeb) return;
         $facebookFeed = $celeb->facebookFeed;
         $twitterFeed = $celeb->instagramFeed;
         $instagramFeed = $celeb->twitterFeed;
-
         foreach ($facebookFeed as $relation) {
             $relation->delete();
         }
@@ -597,7 +596,36 @@ class UserController extends Controller
         }
 
         $celeb->delete();
+    }
 
+    public function updateCeleb(Request $request){
+        $celebId = $request->input("celeb-id");
+        $name = $request->input("name");
+        $fb_id = $request->input("fb_id");
+        $twt_id = $request->input("twt_id");
+        $instagram_id = $request->input("instagram_id");
+        $category = $request->input("category");
+        $country = $request->input("country");
+        $celeb = Celebrity::find($celebId);
+        if(!$celeb) return;
+        if($name != $celeb->name && $name!=null)$celeb->name=$name;
+        if($fb_id != $celeb->fb_id && $fb_id!=null)$celeb->fb_id=$fb_id;
+        if($twt_id != $celeb->twt_id && $twt_id!=null)$celeb->twt_id=$twt_id;
+        if($instagram_id != $celeb->instagram_id && $instagram_id!=null)$celeb->instagram_id=$instagram_id;
+        if($country !=null && strlen($country) == 2) {
+            $country = $this->getCountryByCode($country);
+        }
+        if($country != $celeb->country)$celeb->country=$country;
+        $categoryVar = Category::where("category",'=',$category)->get()->first();
+        if(!$celeb->category()->first()->category == $category){
+            if(!$categoryVar) {
+                $categoryVar = new Category(["category" => $category]);
+                $categoryVar->save();
+            }
+            $celeb->save();
+            $celeb->category()->save($categoryVar);
+        }
+        $celeb->save();
     }
 
     public function getCountryByCode($code){
