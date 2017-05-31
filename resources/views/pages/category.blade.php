@@ -13,7 +13,10 @@
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 
-            <h4><a class="celebLink" href="/celebrities/categories">Categories </a> / {{ $category->category }}</h4>
+            <ol class="breadcrumb secondary">
+                <li><a href="/celebrities/categories">Categories</a></li>
+                <li class="active">{{ $category->category }}</li>
+            </ol>
 
 
             @foreach($celebrities as $result)

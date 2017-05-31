@@ -7,7 +7,7 @@
 
 
     <div class="row">
-        <ol class="breadcrumb">
+        <ol class="breadcrumb secondary">
             <li><a href="/edit-account">Profile</a></li>
             <li class="active">Following</li>
         </ol>
