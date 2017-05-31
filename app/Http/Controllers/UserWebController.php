@@ -60,9 +60,25 @@ class UserWebController extends Controller
 
     public function handleProviderCallback()
     {
-        $user = Socialite::driver('google')->user();
-        dd($user);
-        // $user->token;
+        $gUser = Socialite::driver('google')->user();
+
+        $id = $gUser->getId();
+        $name = $gUser->getName();
+        $email = $gUser->getEmail();
+        $user = User::where('google_id','=',$id)->first();
+        $followersCount = 0;
+        if($user == null) {
+            $newUser = $this->saveGoogleUser($id, $name, $email);
+            if ($newUser != null) {
+                $followersCount = count($user->celebrity()->get());
+            }
+            Session::put('user',$newUser);
+        }
+        else{
+            Session::put('user',$user);
+            return redirect('/home');
+        }
+        return redirect("/suggestions");
     }
 
     public function logOut(){
@@ -100,7 +116,7 @@ class UserWebController extends Controller
             return redirect('/');
         }
 
-        return redirect('/celebrities/all');
+        return redirect('/suggestions');
     }
 
     public function updateUserPassword(Request $request){
