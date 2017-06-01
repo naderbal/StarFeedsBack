@@ -570,6 +570,9 @@ class UserWebController extends Controller
         $instagram_id = $request->input("instagram_id");
         $category = $request->input("category");
         $country = $request->input("country");
+        if(strlen($country) == 2) {
+            $country = $this->getCountryByCode($country);
+        }
         /*if (count(Celebrity::where(['fb_id','=',$fb_id])->get()) > 0){
             return;
         }*/
@@ -804,6 +807,9 @@ class UserWebController extends Controller
             $instagram_id = $request->input("instagram_id");
             $category = $request->input("category");
             $country = $request->input("country");
+            if(strlen($country) == 2) {
+                $country = $this->getCountryByCode($country);
+            }
             $celeb = Celebrity::find($celebId);
             if(!$celeb) return;
             if($name != $celeb->name && $name!=null)$celeb->name=$name;

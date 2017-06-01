@@ -49,11 +49,10 @@ class UserController extends Controller
         ];
     }
 
-    public function loginFacebook(ProviderUser $providerUser){
-        $id = SocialAccount::whereProvider('facebook')
-            ->whereProviderUserId($providerUser->getId());
-        $name = $providerUser->getName();
-        $email = $providerUser->getEmail();
+    public function loginFacebook(Request $request){
+        $id = $request->input("id");
+        $name = $request->input("name");
+        $email = $request->input("email");
         $user = User::where('fb_id','=',$id)->first();
         $followersCount = 0;
         if($user == null){
