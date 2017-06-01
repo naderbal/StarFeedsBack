@@ -431,7 +431,7 @@ class UserWebController extends Controller
             $isSuccessful = true;
         }
         Session::put('user',$user);
-        return redirect('/home');
+        return redirect()->back();
 
     }
 

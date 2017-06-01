@@ -13,10 +13,11 @@
 
                 <div class="col-lg-2 col-md-2 col-sm-3 col-xs-4 col-lg-pull-1 col-md-pull-1 col-md-offset-1 col-sm-offset-1 col-sm-pull-2 col-xs-pull-2 col-xs-offset-2" style="margin-bottom: 5px;">
                     <div class="card secondary">
+                        <a href="/reject-celeb/{{$result->id}}"><span class="close" style="margin-right: 5px" onclick="this.parentNode.style.display='none'">&times;</span></a>
                         <div style="margin:5px;">
                             <img class="card-img-top img-circle center-block img-responsive" style="width:80px; max-height:150px;" src="{{ $result->fb_profile_url }}" alt="Card image cap">
                             <div class="card-block">
-                                <h4 class="card-title text-center"><a class="celebLink" href="/timeline/{{ $result->id }}">{{ $result->name }}</a></h4>
+                                <h4 class="card-title text-center"><a class="celebLink" href="/timeline/{{ $result->name }}">{{ $result->name }}</a></h4>
                                     <a href="/follow/{{$result->id}}" class="btn btn-primary center-block" style="width:60%"><span class="spn"></span>Follow</a>
                             </div>
                         </div>
