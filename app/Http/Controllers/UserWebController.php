@@ -845,7 +845,7 @@ class UserWebController extends Controller
             $user->message()->save($message);
             Session::flash('success','success');
         }
-        return view('pages.contact');
+        return redirect('/contact');
     }
 
     public function getMessages(){

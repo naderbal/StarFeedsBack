@@ -19,7 +19,7 @@
                         <iframe id="video" src="https://www.facebook.com/plugins/video.php?href={{ $postvid }}" onload="resizeIframe(this);" style="width:100%;min-height: 300px;" class="fb_{{ $postid }}" controls muted preload="metadata"></iframe>
 
                     @else
-                        <video src="{{ $postvid }}" style="width:100%" controls muted preload="metadata"></video>
+                        <video src="{{ $postvid }}" style="width:100%" controls preload="metadata"></video>
 
                     @endif
                 <div class="caption">
