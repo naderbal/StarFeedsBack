@@ -52,23 +52,23 @@
                         </div>
 
                         <div class="form-group">
-                            {{Form::label('twitterlink', 'Twitter Link:',array('class' => 'col-lg-3'))}}
+                            {{Form::label('twitterlink', 'Twitter ID:',array('class' => 'col-lg-3'))}}
                             <div class="col-lg-8">
-                                {{Form::text('twitterlink', Session::get('celebrity')->twt_id,array('class' => 'form-control','placeholder' => 'Twitter link'))}}
+                                {{Form::text('twitterlink', Session::get('celebrity')->twt_id,array('class' => 'form-control','placeholder' => 'Twitter ID'))}}
                             </div>
                         </div>
 
                         <div class="form-group">
-                            {{Form::label('facebooklink', 'Facebook Link: ',array('class' => 'col-lg-3'))}}
+                            {{Form::label('facebooklink', 'Facebook ID: ',array('class' => 'col-lg-3'))}}
                             <div class="col-lg-8">
-                                {{Form::text('facebooklink',Session::get('celebrity')->fb_id ,array('class' => 'form-control','placeholder' => 'Facebook link'))}}
+                                {{Form::text('facebooklink',Session::get('celebrity')->fb_id ,array('class' => 'form-control','placeholder' => 'Facebook ID'))}}
                             </div>
                         </div>
 
                         <div class="form-group">
-                            {{Form::label('instagramlink', 'Instagram Link:',array('class' => 'col-lg-3'))}}
+                            {{Form::label('instagramlink', 'Instagram ID:',array('class' => 'col-lg-3'))}}
                             <div class="col-lg-8">
-                                {{Form::text('instagramlink',Session::get('celebrity')->instagram_id ,array('class' => 'form-control','placeholder' => 'Instagram link' ))}}
+                                {{Form::text('instagramlink',Session::get('celebrity')->instagram_id ,array('class' => 'form-control','placeholder' => 'Instagram ID' ))}}
                             </div>
                         </div>
 
