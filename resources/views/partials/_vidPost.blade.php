@@ -16,7 +16,7 @@
                          {{--data-allowfullscreen="true"--}}
                          {{--data-autoplay="true"--}}
                          {{--data-show-captions="true"></div>--}}
-                        <iframe id="video" src="https://www.facebook.com/plugins/video.php?href={{ $postvid }}" onload="resizeIframe(this);" style="width:100%;min-height: 300px;" class="fb_{{ $postid }}" controls muted preload="metadata"></iframe>
+                        <iframe src="https://www.facebook.com/plugins/video.php?href={{ $postvid }}"  style="width:100%;min-height: 300px;" class="fb_{{ $postid }}" preload="metadata"></iframe>
 
                     @else
                         <video src="{{ $postvid }}" style="width:100%" controls preload="metadata"></video>
@@ -29,27 +29,5 @@
 
     </div>
 </div>
-
-<script>
-
-
-    function resizeIframe(obj) {
-        obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
-    }
-
-//    $(window).on('load', function() {
-//        alert('ready');
-//        $("[class^='fb_']").each(function(){
-////            var vid = $(this).find('#u_0_e');
-//            console.log($(this).find(document));
-////            var height = vid.attr('data-video-height');
-////            console.log(height);
-////            $(this).attr('style','height:' + height + 'px;');
-//        });
-//    });
-
-
-</script>
-
 
 
